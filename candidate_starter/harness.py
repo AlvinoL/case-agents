@@ -27,23 +27,25 @@ from common.schemas import Tool
 
 
 def compute_router_metrics(y_true: List[str], y_pred: List[str], labels: List[str]) -> Dict:
-    """TODO: calcule a acurácia e a matriz de confusão do router.
+    """Acurácia e matriz de confusão do router.
 
-    Deve retornar um dict no formato:
-        {
-            "accuracy": 0.9,
-            "confusion_matrix": {
-                "FAST_PATH": {"FAST_PATH": 5, "AGENT": 1},
-                "AGENT": {"FAST_PATH": 0, "AGENT": 10},
-            },
-        }
+    A matriz é indexada por [rótulo verdadeiro][rótulo previsto], ex.:
+        {"FAST_PATH": {"FAST_PATH": 5, "AGENT": 1}, "AGENT": {"FAST_PATH": 0, "AGENT": 10}}
     """
-    raise NotImplementedError("Implemente compute_router_metrics.")
+    matrix = {true: {pred: 0 for pred in labels} for true in labels}
+    for true, pred in zip(y_true, y_pred):
+        matrix[true][pred] += 1
+    correct = sum(matrix[label][label] for label in labels)
+    accuracy = correct / len(y_true) if y_true else 0.0
+    return {"accuracy": accuracy, "confusion_matrix": matrix}
 
 
 def compute_precision_at_k(hits: List[int]) -> float:
-    """TODO: calcule Precision@K a partir de uma lista de 0/1 (acertou ou não a tool)."""
-    raise NotImplementedError("Implemente compute_precision_at_k.")
+    """Fração de queries em que a tool esperada estava no top-k.
+
+    Com uma única tool correta por query, isso equivale a Hit Rate@K (Recall@K).
+    """
+    return sum(hits) / len(hits) if hits else 0.0
 
 
 def compute_savings(
@@ -52,13 +54,18 @@ def compute_savings(
     baseline_cost_usd: float,
     baseline_latency_ms: float,
 ) -> Dict:
-    """TODO: calcule a % de economia de custo e de latência do pipeline inteligente em
-    relação ao baseline (mandar tudo pro LLM caro).
+    """% de economia do pipeline inteligente em relação ao baseline: 100 * (1 - smart/baseline).
 
-    Deve retornar um dict no formato:
-        {"cost_savings_pct": 65.0, "latency_savings_pct": 40.0}
+    Valor negativo indica que o pipeline inteligente saiu mais caro/lento que o baseline.
     """
-    raise NotImplementedError("Implemente compute_savings.")
+
+    def pct(smart: float, baseline: float) -> float:
+        return 100 * (1 - smart / baseline) if baseline else 0.0
+
+    return {
+        "cost_savings_pct": pct(smart_cost_usd, baseline_cost_usd),
+        "latency_savings_pct": pct(smart_latency_ms, baseline_latency_ms),
+    }
 
 
 def run_harness(
