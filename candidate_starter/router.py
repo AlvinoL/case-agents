@@ -1,34 +1,44 @@
 """Pilar 1 — Router de Queries.
 
-Versão esqueleto (MVP): escolhe a rota ao acaso entre os rótulos vistos no treino.
-Serve só para validar o fluxo ponta a ponta; será substituída por um classificador real.
+TF-IDF (palavras + n-gramas de caracteres) + Regressão Logística (decisão D1):
+o texto vira uma tabela esparsa de features e a regressão logística atua como um
+scorecard, devolvendo P(AGENT) e P(FAST_PATH). Barato, rápido e interpretável.
 """
-import random
 import time
 from typing import List
 
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+
+from candidate_starter.text import build_vectorizer
 from common.interfaces import BaseRouter
 from common.schemas import RouteResult
 
 
 class QueryRouter(BaseRouter):
-    def __init__(self, seed: int = 42) -> None:
-        self._rng = random.Random(seed)  # gerador próprio: reprodutível e isolado do global
-        self._labels: List[str] = []
+    def __init__(self, C: float = 10.0) -> None:
+        # C alto = regularização fraca: com 53 frases e milhares de features, o padrão (C=1)
+        # deixa as probabilidades espremidas perto de 0,5. Valor provisório, revisado na D2.
+        self._model = Pipeline([
+            ("tfidf", build_vectorizer()),
+            ("clf", LogisticRegression(C=C, max_iter=1000)),
+        ])
         self._fitted = False
 
     def fit(self, texts: List[str], labels: List[str]) -> "QueryRouter":
-        """Guarda apenas o conjunto de rótulos possíveis (não aprende nada)."""
-        self._labels = sorted(set(labels))
+        """Aprende o vocabulário/IDF e os pesos da regressão a partir das frases rotuladas."""
+        self._model.fit(texts, labels)
         self._fitted = True
         return self
 
     def predict(self, query: str) -> RouteResult:
-        """Sorteia uma rota e mede a latência (em ms)."""
+        """Escolhe a rota mais provável; `confidence` é a probabilidade dessa rota."""
         if not self._fitted:
             raise RuntimeError("Chame fit() antes de predict().")
 
         start = time.perf_counter()
-        route = self._rng.choice(self._labels)
+        probas = self._model.predict_proba([query])[0]
+        best = int(probas.argmax())
+        route = str(self._model.classes_[best])
         latency_ms = (time.perf_counter() - start) * 1000
-        return RouteResult(route=route, latency_ms=latency_ms, confidence=1 / len(self._labels))
+        return RouteResult(route=route, latency_ms=latency_ms, confidence=float(probas[best]))
