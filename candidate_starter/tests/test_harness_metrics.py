@@ -3,6 +3,7 @@ import pytest
 
 from candidate_starter.harness import (
     compute_cost_per_resolved,
+    compute_latency_percentiles,
     compute_mrr,
     compute_precision_at_k,
     compute_router_metrics,
@@ -32,6 +33,13 @@ def test_mrr_premia_posicao_da_tool_certa():
     # 1ª posição = 1, 2ª = 0,5, fora do top-k = 0.
     assert compute_mrr([1.0, 0.5, 0.0]) == pytest.approx(0.5)
     assert compute_mrr([]) == 0.0
+
+
+def test_percentis_de_latencia():
+    result = compute_latency_percentiles([10.0, 20.0, 30.0, 40.0, 50.0])
+    assert result["p50"] == pytest.approx(30.0)
+    assert result["p95"] == pytest.approx(48.0)  # interpolação linear entre 40 e 50
+    assert compute_latency_percentiles([]) == {"p50": None, "p95": None}
 
 
 def test_savings_positiva_negativa_e_baseline_zero():

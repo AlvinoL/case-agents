@@ -14,6 +14,8 @@ docstring, pois `run_harness` e `print_report` dependem dessas chaves.
 import time
 from typing import Dict, List
 
+import numpy as np
+
 from common.interfaces import BaseRouter, BaseToolRetriever
 from common.mock_llm import (
     COST_RETRIEVAL_USD,
@@ -51,6 +53,14 @@ def compute_precision_at_k(hits: List[int]) -> float:
 def compute_mrr(reciprocal_ranks: List[float]) -> float:
     """Mean Reciprocal Rank: média de 1/posição da tool esperada (0 se fora do top-k)."""
     return sum(reciprocal_ranks) / len(reciprocal_ranks) if reciprocal_ranks else 0.0
+
+
+def compute_latency_percentiles(latencies_ms: List[float]) -> Dict:
+    """p50 (tempo típico) e p95 (cauda lenta) por query, com interpolação linear do numpy."""
+    if not latencies_ms:
+        return {"p50": None, "p95": None}
+    p50, p95 = np.percentile(latencies_ms, [50, 95])
+    return {"p50": float(p50), "p95": float(p95)}
 
 
 def compute_savings(
@@ -111,6 +121,7 @@ def run_harness(
     baseline_latency_ms_total = 0.0
     n_resolved = 0
     breakdown_total = {"router": 0.0, "retrieval": 0.0, "agent": 0.0}
+    latencies_ms: Dict[str, List[float]] = {"smart": [], "baseline": [], "router": []}
 
     rows = []
 
@@ -169,6 +180,8 @@ def run_harness(
         row["latency_breakdown_ms"] = breakdown
         for component, ms in breakdown.items():
             breakdown_total[component] += ms
+        latencies_ms["smart"].append(smart_latency_ms)
+        latencies_ms["router"].append(route_result.latency_ms)
 
         row["resolved"] = resolved
         n_resolved += resolved
@@ -177,7 +190,9 @@ def run_harness(
 
         baseline_start = time.perf_counter()
         baseline_result = simulate_baseline_llm_call(query)
-        baseline_latency_ms_total += (time.perf_counter() - baseline_start) * 1000
+        baseline_latency_ms = (time.perf_counter() - baseline_start) * 1000
+        baseline_latency_ms_total += baseline_latency_ms
+        latencies_ms["baseline"].append(baseline_latency_ms)
         baseline_cost_total += baseline_result["cost_usd"]
 
         rows.append(row)
@@ -206,6 +221,7 @@ def run_harness(
             "total_latency_ms": baseline_latency_ms_total,
         },
         **savings,
+        "latency_percentiles_ms": {name: compute_latency_percentiles(v) for name, v in latencies_ms.items()},
         **compute_cost_per_resolved(smart_cost_total, n_resolved, baseline_cost_total, len(eval_dataset)),
         "rows": rows,
     }
@@ -231,6 +247,8 @@ def print_report(report: dict) -> None:
     print("  detalhamento: " + ", ".join(f"{c} {ms:.1f} ms" for c, ms in breakdown.items()))
     print(f"Latência baseline: {report['baseline_always_llm']['total_latency_ms']:.1f} ms")
     print(f"Economia de latência: {report.get('latency_savings_pct', 0):.1f}%")
+    for name, p in report["latency_percentiles_ms"].items():
+        print(f"  {name:<8} p50 {p['p50']:7.2f} ms | p95 {p['p95']:7.2f} ms (por query)")
     print("-" * 60)
     print(f"Taxa de resolução correta: {report['resolution_rate']:.1%}")
     cpr = report["cost_per_resolved_usd"]
