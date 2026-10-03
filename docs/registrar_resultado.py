@@ -25,6 +25,8 @@ COLUNAS = [
     "resolution_rate", "cost_per_resolved_smart", "cost_per_resolved_baseline",
     "smart_latency_ms", "baseline_latency_ms",
     "lat_router_ms", "lat_retrieval_ms", "lat_agent_ms",
+    "hit_at_1", "mrr_at_k",
+    "smart_p50_ms", "smart_p95_ms", "baseline_p50_ms", "baseline_p95_ms", "router_p95_ms",
 ]
 
 
@@ -46,6 +48,7 @@ def main(versao: str, descricao: str) -> None:
     relatorio = json.loads(RELATORIO.read_text(encoding="utf-8"))
     cpr = relatorio.get("cost_per_resolved_usd", {})
     detalhe = relatorio["smart_pipeline"].get("latency_breakdown_ms", {})
+    pct = relatorio.get("latency_percentiles_ms", {})
     linha = {
         "versao": versao,
         "data": date.today().isoformat(),
@@ -65,6 +68,13 @@ def main(versao: str, descricao: str) -> None:
         "lat_router_ms": arredondar(detalhe.get("router"), 2),
         "lat_retrieval_ms": arredondar(detalhe.get("retrieval"), 2),
         "lat_agent_ms": arredondar(detalhe.get("agent"), 1),
+        "hit_at_1": arredondar(relatorio.get("hit_at_1"), 4),
+        "mrr_at_k": arredondar(relatorio.get("mrr_at_k"), 4),
+        "smart_p50_ms": arredondar(pct.get("smart", {}).get("p50"), 1),
+        "smart_p95_ms": arredondar(pct.get("smart", {}).get("p95"), 1),
+        "baseline_p50_ms": arredondar(pct.get("baseline", {}).get("p50"), 1),
+        "baseline_p95_ms": arredondar(pct.get("baseline", {}).get("p95"), 1),
+        "router_p95_ms": arredondar(pct.get("router", {}).get("p95"), 3),
     }
 
     PASTA.mkdir(parents=True, exist_ok=True)
