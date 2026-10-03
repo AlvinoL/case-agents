@@ -1,18 +1,21 @@
 import json
 from pathlib import Path
+from typing import Optional
 
 from common.data_loader import load_eval_dataset, load_router_training_data, load_tools
+from common.interfaces import BaseRouter
 from candidate_starter.harness import print_report, run_harness
 from candidate_starter.retrieval import ToolRetriever
 from candidate_starter.router import QueryRouter
 
 
-def main() -> None:
+def main(router: Optional[BaseRouter] = None) -> None:
+    """Roda o harness; `router` permite avaliar alternativas (ex.: baselines triviais)."""
     tools = load_tools()
     train_texts, train_labels = load_router_training_data()
     eval_dataset = load_eval_dataset()
 
-    router = QueryRouter().fit(train_texts, train_labels)
+    router = (router or QueryRouter()).fit(train_texts, train_labels)
     retriever = ToolRetriever().fit(tools)
 
     report = run_harness(router, retriever, tools, eval_dataset)
