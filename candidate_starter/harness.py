@@ -48,6 +48,11 @@ def compute_precision_at_k(hits: List[int]) -> float:
     return sum(hits) / len(hits) if hits else 0.0
 
 
+def compute_mrr(reciprocal_ranks: List[float]) -> float:
+    """Mean Reciprocal Rank: média de 1/posição da tool esperada (0 se fora do top-k)."""
+    return sum(reciprocal_ranks) / len(reciprocal_ranks) if reciprocal_ranks else 0.0
+
+
 def compute_savings(
     smart_cost_usd: float,
     smart_latency_ms: float,
@@ -97,6 +102,8 @@ def run_harness(
     y_true: List[str] = []
     y_pred: List[str] = []
     precision_hits: List[int] = []
+    hits_at_1: List[int] = []
+    reciprocal_ranks: List[float] = []
 
     smart_cost_total = 0.0
     smart_latency_ms_total = 0.0
@@ -139,6 +146,10 @@ def run_harness(
             top_k_names = [m.name for m in retrieval_result.matches]
             if expected_tool:
                 precision_hits.append(int(expected_tool in top_k_names))
+                # Mesmo conjunto de queries do Precision@K, olhando a posição da tool certa.
+                hits_at_1.append(int(top_k_names[:1] == [expected_tool]))
+                rank = top_k_names.index(expected_tool) + 1 if expected_tool in top_k_names else None
+                reciprocal_ranks.append(1 / rank if rank else 0.0)
 
             row["retrieved_tools"] = top_k_names
             row["expected_tool"] = expected_tool
@@ -182,6 +193,8 @@ def run_harness(
         "router_accuracy": router_metrics["accuracy"],
         "confusion_matrix": router_metrics["confusion_matrix"],
         "precision_at_k": precision_at_k,
+        "hit_at_1": compute_precision_at_k(hits_at_1) if hits_at_1 else None,
+        "mrr_at_k": compute_mrr(reciprocal_ranks) if reciprocal_ranks else None,
         "k": k,
         "smart_pipeline": {
             "total_cost_usd": smart_cost_total,
@@ -208,6 +221,7 @@ def print_report(report: dict) -> None:
     print(f"Matriz de confusão: {report['confusion_matrix']}")
     if report["precision_at_k"] is not None:
         print(f"Precision@{report['k']} do Retriever: {report['precision_at_k']:.1%}")
+        print(f"  Hit@1 (tool executada certa): {report['hit_at_1']:.1%} | MRR@{report['k']}: {report['mrr_at_k']:.3f}")
     print("-" * 60)
     print(f"Custo pipeline inteligente: ${report['smart_pipeline']['total_cost_usd']:.5f}")
     print(f"Custo baseline (tudo pro LLM): ${report['baseline_always_llm']['total_cost_usd']:.5f}")

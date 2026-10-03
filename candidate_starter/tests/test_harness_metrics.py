@@ -3,6 +3,7 @@ import pytest
 
 from candidate_starter.harness import (
     compute_cost_per_resolved,
+    compute_mrr,
     compute_precision_at_k,
     compute_router_metrics,
     compute_savings,
@@ -25,6 +26,12 @@ def test_router_metrics_matriz_indexada_por_verdadeiro_e_previsto():
 def test_precision_at_k_e_fracao_de_acertos():
     assert compute_precision_at_k([1, 0, 1, 1]) == 0.75
     assert compute_precision_at_k([]) == 0.0
+
+
+def test_mrr_premia_posicao_da_tool_certa():
+    # 1ª posição = 1, 2ª = 0,5, fora do top-k = 0.
+    assert compute_mrr([1.0, 0.5, 0.0]) == pytest.approx(0.5)
+    assert compute_mrr([]) == 0.0
 
 
 def test_savings_positiva_negativa_e_baseline_zero():
