@@ -1,6 +1,6 @@
 """Baselines triviais para comparação no histórico de resultados.
 
-Uso: python -m candidate_starter.baselines
+Uso: python -m candidate_starter.baselines [--sem-retriever]
 """
 import time
 from typing import List
@@ -21,6 +21,8 @@ class AlwaysAgentRouter(BaseRouter):
 
 
 if __name__ == "__main__":
+    import sys
+
     from candidate_starter.run_case import main
 
-    main(router=AlwaysAgentRouter())
+    main(router=AlwaysAgentRouter(), with_retriever="--sem-retriever" not in sys.argv)

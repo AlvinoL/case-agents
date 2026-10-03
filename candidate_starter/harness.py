@@ -12,7 +12,7 @@ Preencha as funções marcadas com TODO. Respeite o formato de retorno pedido em
 docstring, pois `run_harness` e `print_report` dependem dessas chaves.
 """
 import time
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import numpy as np
 
@@ -102,11 +102,16 @@ def compute_cost_per_resolved(
 
 def run_harness(
     router: BaseRouter,
-    retriever: BaseToolRetriever,
+    retriever: Optional[BaseToolRetriever],
     tools: List[Tool],
     eval_dataset: List[dict],
     k: int = 2,
 ) -> dict:
+    """Roda o pipeline inteligente e o baseline em cada query e monta o relatório.
+
+    `retriever=None` significa sem seleção de tools: queries AGENT vão ao LLM caro com o
+    catálogo inteiro, e as métricas de retriever ficam None.
+    """
     labels = ["FAST_PATH", "AGENT"]
 
     y_true: List[str] = []
@@ -149,6 +154,14 @@ def run_harness(
         if route_result.route == "FAST_PATH":
             fast_path_answer(query)
             resolved = expected_route == "FAST_PATH"
+        elif retriever is None:
+            # Sem seleção de tools: o agente chama o LLM caro com o catálogo inteiro, igual ao
+            # baseline. Isola o efeito do router (a economia do top-k ainda não existe).
+            agent_start = time.perf_counter()
+            llm_result = simulate_baseline_llm_call(query)
+            breakdown["agent"] = (time.perf_counter() - agent_start) * 1000
+            smart_cost += llm_result["cost_usd"]
+            resolved = True  # mesma premissa do baseline: com todas as tools, o LLM resolve
         else:
             retrieval_result = retriever.search(query, k=k)
             smart_cost += COST_RETRIEVAL_USD

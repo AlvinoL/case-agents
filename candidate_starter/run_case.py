@@ -1,4 +1,5 @@
 import json
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -9,14 +10,17 @@ from candidate_starter.retrieval import ToolRetriever
 from candidate_starter.router import QueryRouter
 
 
-def main(router: Optional[BaseRouter] = None) -> None:
-    """Roda o harness; `router` permite avaliar alternativas (ex.: baselines triviais)."""
+def main(router: Optional[BaseRouter] = None, with_retriever: bool = True) -> None:
+    """Roda o harness; `router` permite avaliar alternativas (ex.: baselines triviais).
+
+    `with_retriever=False` manda as queries AGENT ao LLM caro com todas as tools (isola o router).
+    """
     tools = load_tools()
     train_texts, train_labels = load_router_training_data()
     eval_dataset = load_eval_dataset()
 
     router = (router or QueryRouter()).fit(train_texts, train_labels)
-    retriever = ToolRetriever().fit(tools)
+    retriever = ToolRetriever().fit(tools) if with_retriever else None
 
     report = run_harness(router, retriever, tools, eval_dataset)
     print_report(report)
@@ -28,4 +32,4 @@ def main(router: Optional[BaseRouter] = None) -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main(with_retriever="--sem-retriever" not in sys.argv)
