@@ -60,3 +60,19 @@ def test_cost_per_resolved_e_sem_resolucao():
 
     # Nada resolvido: custo por resolvido é indefinido (None), não divisão por zero.
     assert compute_cost_per_resolved(0.30, 0, 0.90, 30)["cost_per_resolved_usd"]["smart"] is None
+
+
+def test_sem_retriever_sempre_agent_e_identico_ao_baseline():
+    """Sanidade da régua: sem router útil e sem retriever, o pipeline É o baseline."""
+    from candidate_starter.baselines import AlwaysAgentRouter
+    from candidate_starter.harness import run_harness
+
+    eval_dataset = [
+        {"query": "Quero saber meu saldo", "expected_route": "AGENT", "expected_tool": "consultar_saldo"},
+        {"query": "Bom dia", "expected_route": "FAST_PATH", "expected_tool": None},
+    ]
+    report = run_harness(AlwaysAgentRouter(), None, [], eval_dataset)
+
+    assert report["cost_savings_pct"] == pytest.approx(0.0, abs=0.01)  # só o custo ínfimo do router
+    assert report["precision_at_k"] is None and report["hit_at_1"] is None
+    assert report["resolution_rate"] == 1.0  # mesma premissa do baseline

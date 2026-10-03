@@ -1,0 +1,25 @@
+{
+  "cv": "RepeatedStratifiedKFold(5, 10, seed=42)",
+  "resultados": {
+    "sempre AGENT (classe majoritária)": {
+      "acuracia_media": 0.5272727272727272,
+      "acuracia_desvio": 0.022268088570756142,
+      "erros_graves_por_repeticao": 0.0
+    },
+    "só palavras": {
+      "acuracia_media": 0.8598181818181818,
+      "acuracia_desvio": 0.08601537437051106,
+      "erros_graves_por_repeticao": 1.8
+    },
+    "só caracteres": {
+      "acuracia_media": 0.8814545454545456,
+      "acuracia_desvio": 0.09858435998198624,
+      "erros_graves_por_repeticao": 1.2
+    },
+    "D1: palavras + caracteres": {
+      "acuracia_media": 0.898,
+      "acuracia_desvio": 0.08607684439206555,
+      "erros_graves_por_repeticao": 1.0
+    }
+  }
+}
