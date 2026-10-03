@@ -7,3 +7,4 @@ v00.1-sempre-agent,2026-10-03,cd656c5,mesma solução da v00; latência do pipel
 v01.3-aleatorio,2026-10-03,f003b05,"mesma solução da v01; régua nova: Hit@1, MRR@k e p50/p95",0.7667,0.0,76.7,60.1,3,0.2,0.03501,0.03,1089.3,2731.5,0.31,0.93,1086.2,0.0,0.0,44.2,65.0,93.5,116.5,0.017
 v00.2-sempre-agent,2026-10-03,f003b05,"mesma solução da v00; régua nova: Hit@1, MRR@k e p50/p95",0.6667,0.0,66.7,39.6,0,0.0,,0.03,1605.9,2660.0,0.03,2.02,1601.4,0.0,0.0,53.6,67.7,87.1,115.7,0.002
 v00.3-sempre-agent-sem-retriever,2026-10-03,999f042,controle: sempre AGENT e sem retriever = baseline (economia de custo deve ser 0%),0.6667,,-0.0,-6.1,0,1.0,0.03,0.03,2811.3,2650.9,0.03,0.0,2810.0,,,92.9,116.2,85.4,115.7,0.002
+v01.4-aleatorio-sem-retriever,2026-10-03,ca77567,router aleatório e sem retriever (todas as tools ao LLM): degrau da escada de ablação,0.7667,,30.0,30.3,3,0.9,0.02333,0.03,1897.1,2722.6,0.38,0.0,1895.1,,,77.2,114.1,92.6,114.8,0.019
