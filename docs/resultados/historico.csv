@@ -3,3 +3,4 @@ v01-aleatorio,2026-10-01,78f7936,"router e retriever aleatórios (seed 42 = máx
 v01.1-aleatorio,2026-10-03,da4cdaa,"mesma solução da v01, medida com custo por atendimento resolvido",0.7667,0.0,76.7,99.9,3,0.2,0.03501,0.03,1.7,2725.4,,,
 v00-sempre-agent,2026-10-03,8c00955,baseline trivial: router sempre AGENT + retriever aleatório,0.6667,0.0,66.7,99.9,0,0.0,,0.03,2.0,2644.6,,,
 v01.2-aleatorio,2026-10-03,02f9eaa,mesma solução da v01; latência do pipeline medida de ponta a ponta (correção do bug),0.7667,0.0,76.7,60.6,3,0.2,0.03501,0.03,1065.6,2705.6,0.32,1.05,1062.5
+v00.1-sempre-agent,2026-10-03,cd656c5,mesma solução da v00; latência do pipeline medida de ponta a ponta (correção do bug),0.6667,0.0,66.7,39.6,0,0.0,,0.03,1612.2,2670.0,0.03,1.97,1608.3
