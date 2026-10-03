@@ -68,6 +68,23 @@ def compute_savings(
     }
 
 
+def compute_cost_per_resolved(
+    smart_cost_usd: float, n_resolved: int, baseline_cost_usd: float, n_queries: int
+) -> Dict:
+    """Custo por atendimento resolvido corretamente (métrica proposta, além do case).
+
+    Premissa: o baseline (LLM caro com todas as tools) resolve 100% das queries. É otimista
+    para o baseline e, portanto, conservadora para o pipeline inteligente.
+    """
+    return {
+        "resolution_rate": n_resolved / n_queries if n_queries else 0.0,
+        "cost_per_resolved_usd": {
+            "smart": smart_cost_usd / n_resolved if n_resolved else None,
+            "baseline": baseline_cost_usd / n_queries if n_queries else None,
+        },
+    }
+
+
 def run_harness(
     router: BaseRouter,
     retriever: BaseToolRetriever,
@@ -85,6 +102,7 @@ def run_harness(
     smart_latency_ms_total = 0.0
     baseline_cost_total = 0.0
     baseline_latency_ms_total = 0.0
+    n_resolved = 0
 
     rows = []
 
@@ -108,6 +126,7 @@ def run_harness(
 
         if route_result.route == "FAST_PATH":
             fast_path_answer(query)
+            resolved = expected_route == "FAST_PATH"
         else:
             retrieval_result = retriever.search(query, k=k)
             smart_cost += COST_RETRIEVAL_USD
@@ -125,6 +144,11 @@ def run_harness(
                 llm_result = simulate_agent_llm_call(query, top_k_names[0])
                 smart_cost += llm_result["cost_usd"]
 
+            # Resolvido = a tool executada (top-1) é a esperada; FAST_PATH esperado nunca resolve aqui.
+            resolved = bool(top_k_names) and top_k_names[0] == expected_tool
+
+        row["resolved"] = resolved
+        n_resolved += resolved
         smart_cost_total += smart_cost
         smart_latency_ms_total += smart_latency_ms
 
@@ -153,6 +177,7 @@ def run_harness(
             "total_latency_ms": baseline_latency_ms_total,
         },
         **savings,
+        **compute_cost_per_resolved(smart_cost_total, n_resolved, baseline_cost_total, len(eval_dataset)),
         "rows": rows,
     }
     return report
@@ -174,4 +199,9 @@ def print_report(report: dict) -> None:
     print(f"Latência pipeline inteligente: {report['smart_pipeline']['total_latency_ms']:.1f} ms")
     print(f"Latência baseline: {report['baseline_always_llm']['total_latency_ms']:.1f} ms")
     print(f"Economia de latência: {report.get('latency_savings_pct', 0):.1f}%")
+    print("-" * 60)
+    print(f"Taxa de resolução correta: {report['resolution_rate']:.1%}")
+    cpr = report["cost_per_resolved_usd"]
+    smart_cpr = f"${cpr['smart']:.5f}" if cpr["smart"] is not None else "n/a (nada resolvido)"
+    print(f"Custo por atendimento resolvido: {smart_cpr} vs baseline ${cpr['baseline']:.5f}")
     print("=" * 60)

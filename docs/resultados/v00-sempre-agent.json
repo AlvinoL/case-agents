@@ -1,0 +1,363 @@
+{
+  "n_queries": 30,
+  "router_accuracy": 0.6666666666666666,
+  "confusion_matrix": {
+    "FAST_PATH": {
+      "FAST_PATH": 0,
+      "AGENT": 10
+    },
+    "AGENT": {
+      "FAST_PATH": 0,
+      "AGENT": 20
+    }
+  },
+  "precision_at_k": 0.0,
+  "k": 2,
+  "smart_pipeline": {
+    "total_cost_usd": 0.30004499999999995,
+    "total_latency_ms": 2.0283786579966545
+  },
+  "baseline_always_llm": {
+    "total_cost_usd": 0.9000000000000006,
+    "total_latency_ms": 2644.596539903432
+  },
+  "cost_savings_pct": 66.66166666666669,
+  "latency_savings_pct": 99.92330101671877,
+  "resolution_rate": 0.0,
+  "cost_per_resolved_usd": {
+    "smart": null,
+    "baseline": 0.03000000000000002
+  },
+  "rows": [
+    {
+      "query": "Qual o valor da minha fatura desse mês?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "atualizar_foto_perfil",
+        "consultar_taxa_juros"
+      ],
+      "expected_tool": "consultar_fatura",
+      "resolved": false
+    },
+    {
+      "query": "Quero saber meu saldo",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_taxas_maquininha",
+        "contratar_financiamento_imovel"
+      ],
+      "expected_tool": "consultar_saldo",
+      "resolved": false
+    },
+    {
+      "query": "Bom dia, qual o horário de atendimento?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "desativar_notificacoes_push",
+        "solicitar_ligacao_suporte"
+      ],
+      "expected_tool": null,
+      "resolved": false
+    },
+    {
+      "query": "Preciso mudei de casa, como mudo o CEP?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "recuperar_acesso_email",
+        "processar_mudanca_endereco_atualizar_entrega"
+      ],
+      "expected_tool": "alterar_endereco",
+      "resolved": false
+    },
+    {
+      "query": "Quanto eu tenho disponível na conta agora?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "alterar_endereco",
+        "consultar_limite_cheque_especial"
+      ],
+      "expected_tool": "consultar_saldo",
+      "resolved": false
+    },
+    {
+      "query": "Fiz uma compra que não reconheço, quero contestar",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "pix_consultar_status",
+        "pix_receber_chave"
+      ],
+      "expected_tool": "estornar_transacao",
+      "resolved": false
+    },
+    {
+      "query": "Cobraram algo errado no meu cartão, quero o dinheiro de volta",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "alterar_telefone",
+        "consultar_consorcio"
+      ],
+      "expected_tool": "estornar_transacao",
+      "resolved": false
+    },
+    {
+      "query": "Me envia a linha digitável da fatura",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "revogar_acesso_dispositivo",
+        "calcular_data_futura"
+      ],
+      "expected_tool": "consultar_fatura",
+      "resolved": false
+    },
+    {
+      "query": "Qual o limite que ainda tenho no cartão de crédito?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_score_credito",
+        "consultar_boleto"
+      ],
+      "expected_tool": "consultar_limite_cartao",
+      "resolved": false
+    },
+    {
+      "query": "Posso dividir o pagamento da fatura em parcelas?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "processar_mudanca_endereco_atualizar_entrega",
+        "excluir_dados_lgpd"
+      ],
+      "expected_tool": "parcelar_fatura",
+      "resolved": false
+    },
+    {
+      "query": "Quero parcelar minha fatura em 3 vezes",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "ofertar_lance_consorcio",
+        "consultar_motivo_cartao_bloqueado"
+      ],
+      "expected_tool": "parcelar_fatura",
+      "resolved": false
+    },
+    {
+      "query": "Troquei de número, preciso atualizar o telefone cadastrado",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_recebiveis_pj",
+        "consultar_extrato"
+      ],
+      "expected_tool": "alterar_telefone",
+      "resolved": false
+    },
+    {
+      "query": "Quero mudar o e-mail vinculado à minha conta",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_apolice_seguro",
+        "consultar_limite_cheque_especial"
+      ],
+      "expected_tool": "atualizar_email",
+      "resolved": false
+    },
+    {
+      "query": "Perdi meu cartão na rua, preciso bloquear agora",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "agendar_atendimento_agencia",
+        "consultar_recebiveis_pj"
+      ],
+      "expected_tool": "bloquear_cartao",
+      "resolved": false
+    },
+    {
+      "query": "Chegou meu cartão novo, como faço para desbloquear?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "transferir_entre_investimentos",
+        "contribuir_previdencia"
+      ],
+      "expected_tool": "desbloquear_cartao",
+      "resolved": false
+    },
+    {
+      "query": "Meu cartão parou de funcionar, quero uma segunda via",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_limite_cartao_corporativo",
+        "recuperar_acesso_email"
+      ],
+      "expected_tool": "solicitar_segunda_via_cartao",
+      "resolved": false
+    },
+    {
+      "query": "O aplicativo está travando, quero abrir um chamado",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "alterar_telefone",
+        "excluir_meta_financeira"
+      ],
+      "expected_tool": "abrir_chamado_suporte",
+      "resolved": false
+    },
+    {
+      "query": "Oi, boa tarde",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "atualizar_numero_whatsapp",
+        "consultar_titulares_conta"
+      ],
+      "expected_tool": null,
+      "resolved": false
+    },
+    {
+      "query": "Qual a taxa de manutenção mensal da conta?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_horario_agencia",
+        "abrir_conta_pj"
+      ],
+      "expected_tool": null,
+      "resolved": false
+    },
+    {
+      "query": "Vocês atendem no sábado?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "pix_cadastrar_chave",
+        "registrar_compra_nao_reconhecida"
+      ],
+      "expected_tool": null,
+      "resolved": false
+    },
+    {
+      "query": "Muito obrigado pela ajuda, até logo",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "abrir_chamado_travamento_app",
+        "contestar_cobranca_duplicada"
+      ],
+      "expected_tool": null,
+      "resolved": false
+    },
+    {
+      "query": "Como funciona o programa de cashback de vocês?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "editar_meta_financeira",
+        "consultar_cartoes_ativos"
+      ],
+      "expected_tool": null,
+      "resolved": false
+    },
+    {
+      "query": "Qual o telefone do SAC?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "parcelar_fatura_numero_vezes_escolhido",
+        "transferir_milhas"
+      ],
+      "expected_tool": null,
+      "resolved": false
+    },
+    {
+      "query": "Quais documentos preciso para abrir uma conta?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "antecipar_beneficio_inss",
+        "consultar_carteira_cripto"
+      ],
+      "expected_tool": null,
+      "resolved": false
+    },
+    {
+      "query": "Bom dia! Qual o valor mínimo para abrir uma conta?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_limite_disponivel_credito",
+        "pix_excluir_chave"
+      ],
+      "expected_tool": null,
+      "resolved": false
+    },
+    {
+      "query": "Preciso saber o saldo disponível pra pix",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "ativar_biometria",
+        "ativar_programa_milhas"
+      ],
+      "expected_tool": "consultar_saldo",
+      "resolved": false
+    },
+    {
+      "query": "Essa cobrança na fatura não fui eu, quero estornar",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_cartoes_ativos",
+        "revogar_acesso_dispositivo"
+      ],
+      "expected_tool": "estornar_transacao",
+      "resolved": false
+    },
+    {
+      "query": "Manda o pdf da minha fatura atual",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "confirmar_email_cadastrado",
+        "excluir_meta_financeira"
+      ],
+      "expected_tool": "consultar_fatura",
+      "resolved": false
+    },
+    {
+      "query": "Mudei de endereço, como atualizo minha entrega?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_recebiveis_pj",
+        "consultar_valor_total_fatura"
+      ],
+      "expected_tool": "alterar_endereco",
+      "resolved": false
+    },
+    {
+      "query": "Vocês cobram taxa de manutenção de conta?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_extrato_inss",
+        "solicitar_cotacao_seguro_celular"
+      ],
+      "expected_tool": null,
+      "resolved": false
+    }
+  ]
+}
