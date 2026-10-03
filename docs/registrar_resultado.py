@@ -23,6 +23,8 @@ COLUNAS = [
     "versao", "data", "commit", "descricao", "router_accuracy", "precision_at_k",
     "cost_savings_pct", "latency_savings_pct", "erros_agent_para_fast",
     "resolution_rate", "cost_per_resolved_smart", "cost_per_resolved_baseline",
+    "smart_latency_ms", "baseline_latency_ms",
+    "lat_router_ms", "lat_retrieval_ms", "lat_agent_ms",
 ]
 
 
@@ -43,6 +45,7 @@ def main(versao: str, descricao: str) -> None:
 
     relatorio = json.loads(RELATORIO.read_text(encoding="utf-8"))
     cpr = relatorio.get("cost_per_resolved_usd", {})
+    detalhe = relatorio["smart_pipeline"].get("latency_breakdown_ms", {})
     linha = {
         "versao": versao,
         "data": date.today().isoformat(),
@@ -57,6 +60,11 @@ def main(versao: str, descricao: str) -> None:
         "resolution_rate": arredondar(relatorio.get("resolution_rate"), 4),
         "cost_per_resolved_smart": arredondar(cpr.get("smart"), 5),
         "cost_per_resolved_baseline": arredondar(cpr.get("baseline"), 5),
+        "smart_latency_ms": arredondar(relatorio["smart_pipeline"]["total_latency_ms"], 1),
+        "baseline_latency_ms": arredondar(relatorio["baseline_always_llm"]["total_latency_ms"], 1),
+        "lat_router_ms": arredondar(detalhe.get("router"), 2),
+        "lat_retrieval_ms": arredondar(detalhe.get("retrieval"), 2),
+        "lat_agent_ms": arredondar(detalhe.get("agent"), 1),
     }
 
     PASTA.mkdir(parents=True, exist_ok=True)

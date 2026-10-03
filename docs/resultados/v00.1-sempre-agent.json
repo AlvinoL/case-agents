@@ -1,0 +1,548 @@
+{
+  "n_queries": 30,
+  "router_accuracy": 0.6666666666666666,
+  "confusion_matrix": {
+    "FAST_PATH": {
+      "FAST_PATH": 0,
+      "AGENT": 10
+    },
+    "AGENT": {
+      "FAST_PATH": 0,
+      "AGENT": 20
+    }
+  },
+  "precision_at_k": 0.0,
+  "k": 2,
+  "smart_pipeline": {
+    "total_cost_usd": 0.30004499999999995,
+    "total_latency_ms": 1612.1968710795045,
+    "latency_breakdown_ms": {
+      "router": 0.034168362617492676,
+      "retrieval": 1.9697099924087524,
+      "agent": 1608.319669496268
+    }
+  },
+  "baseline_always_llm": {
+    "total_cost_usd": 0.9000000000000006,
+    "total_latency_ms": 2669.977835379541
+  },
+  "cost_savings_pct": 66.66166666666669,
+  "latency_savings_pct": 39.61759346027198,
+  "resolution_rate": 0.0,
+  "cost_per_resolved_usd": {
+    "smart": null,
+    "baseline": 0.03000000000000002
+  },
+  "rows": [
+    {
+      "query": "Qual o valor da minha fatura desse mês?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "atualizar_foto_perfil",
+        "consultar_taxa_juros"
+      ],
+      "expected_tool": "consultar_fatura",
+      "latency_ms": 60.680790804326534,
+      "latency_breakdown_ms": {
+        "router": 0.00016577541828155518,
+        "retrieval": 0.022333115339279175,
+        "agent": 60.63162488862872
+      },
+      "resolved": false
+    },
+    {
+      "query": "Quero saber meu saldo",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_taxas_maquininha",
+        "contratar_financiamento_imovel"
+      ],
+      "expected_tool": "consultar_saldo",
+      "latency_ms": 43.02249988541007,
+      "latency_breakdown_ms": {
+        "router": 0.001834239810705185,
+        "retrieval": 0.0511673279106617,
+        "agent": 42.93358372524381
+      },
+      "resolved": false
+    },
+    {
+      "query": "Bom dia, qual o horário de atendimento?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "desativar_notificacoes_push",
+        "solicitar_ligacao_suporte"
+      ],
+      "expected_tool": null,
+      "latency_ms": 62.66870768740773,
+      "latency_breakdown_ms": {
+        "router": 0.0005830079317092896,
+        "retrieval": 0.054833944886922836,
+        "agent": 62.56487499922514
+      },
+      "resolved": false
+    },
+    {
+      "query": "Preciso mudei de casa, como mudo o CEP?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "recuperar_acesso_email",
+        "processar_mudanca_endereco_atualizar_entrega"
+      ],
+      "expected_tool": "alterar_endereco",
+      "latency_ms": 70.6022079102695,
+      "latency_breakdown_ms": {
+        "router": 0.0010421499609947205,
+        "retrieval": 0.0743749551475048,
+        "agent": 70.45504171401262
+      },
+      "resolved": false
+    },
+    {
+      "query": "Quanto eu tenho disponível na conta agora?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "alterar_endereco",
+        "consultar_limite_cheque_especial"
+      ],
+      "expected_tool": "consultar_saldo",
+      "latency_ms": 48.392041120678186,
+      "latency_breakdown_ms": {
+        "router": 0.0007501803338527679,
+        "retrieval": 0.060333870351314545,
+        "agent": 48.271875362843275
+      },
+      "resolved": false
+    },
+    {
+      "query": "Fiz uma compra que não reconheço, quero contestar",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "pix_consultar_status",
+        "pix_receber_chave"
+      ],
+      "expected_tool": "estornar_transacao",
+      "latency_ms": 43.934875167906284,
+      "latency_breakdown_ms": {
+        "router": 0.0007920898497104645,
+        "retrieval": 0.06012525409460068,
+        "agent": 43.80962485447526
+      },
+      "resolved": false
+    },
+    {
+      "query": "Cobraram algo errado no meu cartão, quero o dinheiro de volta",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "alterar_telefone",
+        "consultar_consorcio"
+      ],
+      "expected_tool": "estornar_transacao",
+      "latency_ms": 36.23091662302613,
+      "latency_breakdown_ms": {
+        "router": 0.0006668269634246826,
+        "retrieval": 0.05695829167962074,
+        "agent": 36.120917182415724
+      },
+      "resolved": false
+    },
+    {
+      "query": "Me envia a linha digitável da fatura",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "revogar_acesso_dispositivo",
+        "calcular_data_futura"
+      ],
+      "expected_tool": "consultar_fatura",
+      "latency_ms": 61.209124978631735,
+      "latency_breakdown_ms": {
+        "router": 0.0010831281542778015,
+        "retrieval": 0.07137516513466835,
+        "agent": 61.0689171589911
+      },
+      "resolved": false
+    },
+    {
+      "query": "Qual o limite que ainda tenho no cartão de crédito?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_score_credito",
+        "consultar_boleto"
+      ],
+      "expected_tool": "consultar_limite_cartao",
+      "latency_ms": 43.30066591501236,
+      "latency_breakdown_ms": {
+        "router": 0.0008330680429935455,
+        "retrieval": 0.06466684862971306,
+        "agent": 43.175042141228914
+      },
+      "resolved": false
+    },
+    {
+      "query": "Posso dividir o pagamento da fatura em parcelas?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "processar_mudanca_endereco_atualizar_entrega",
+        "excluir_dados_lgpd"
+      ],
+      "expected_tool": "parcelar_fatura",
+      "latency_ms": 67.5937500782311,
+      "latency_breakdown_ms": {
+        "router": 0.001000240445137024,
+        "retrieval": 0.06454112008213997,
+        "agent": 67.4509578384459
+      },
+      "resolved": false
+    },
+    {
+      "query": "Quero parcelar minha fatura em 3 vezes",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "ofertar_lance_consorcio",
+        "consultar_motivo_cartao_bloqueado"
+      ],
+      "expected_tool": "parcelar_fatura",
+      "latency_ms": 65.63266599550843,
+      "latency_breakdown_ms": {
+        "router": 0.0011669471859931946,
+        "retrieval": 0.06191665306687355,
+        "agent": 65.505042206496
+      },
+      "resolved": false
+    },
+    {
+      "query": "Troquei de número, preciso atualizar o telefone cadastrado",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_recebiveis_pj",
+        "consultar_extrato"
+      ],
+      "expected_tool": "alterar_telefone",
+      "latency_ms": 47.67883289605379,
+      "latency_breakdown_ms": {
+        "router": 0.0008749775588512421,
+        "retrieval": 0.055625103414058685,
+        "agent": 47.570666298270226
+      },
+      "resolved": false
+    },
+    {
+      "query": "Quero mudar o e-mail vinculado à minha conta",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_apolice_seguro",
+        "consultar_limite_cheque_especial"
+      ],
+      "expected_tool": "atualizar_email",
+      "latency_ms": 73.4956250526011,
+      "latency_breakdown_ms": {
+        "router": 0.001125037670135498,
+        "retrieval": 0.06629200652241707,
+        "agent": 73.36012506857514
+      },
+      "resolved": false
+    },
+    {
+      "query": "Perdi meu cartão na rua, preciso bloquear agora",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "agendar_atendimento_agencia",
+        "consultar_recebiveis_pj"
+      ],
+      "expected_tool": "bloquear_cartao",
+      "latency_ms": 38.9206251129508,
+      "latency_breakdown_ms": {
+        "router": 0.0011669471859931946,
+        "retrieval": 0.0644586980342865,
+        "agent": 38.789458107203245
+      },
+      "resolved": false
+    },
+    {
+      "query": "Chegou meu cartão novo, como faço para desbloquear?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "transferir_entre_investimentos",
+        "contribuir_previdencia"
+      ],
+      "expected_tool": "desbloquear_cartao",
+      "latency_ms": 66.68674992397428,
+      "latency_breakdown_ms": {
+        "router": 0.001166015863418579,
+        "retrieval": 0.05954224616289139,
+        "agent": 66.56504096463323
+      },
+      "resolved": false
+    },
+    {
+      "query": "Meu cartão parou de funcionar, quero uma segunda via",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_limite_cartao_corporativo",
+        "recuperar_acesso_email"
+      ],
+      "expected_tool": "solicitar_segunda_via_cartao",
+      "latency_ms": 66.66416581720114,
+      "latency_breakdown_ms": {
+        "router": 0.0009578652679920197,
+        "retrieval": 0.06395764648914337,
+        "agent": 66.5373750962317
+      },
+      "resolved": false
+    },
+    {
+      "query": "O aplicativo está travando, quero abrir um chamado",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "alterar_telefone",
+        "excluir_meta_financeira"
+      ],
+      "expected_tool": "abrir_chamado_suporte",
+      "latency_ms": 52.95254196971655,
+      "latency_breakdown_ms": {
+        "router": 0.001084059476852417,
+        "retrieval": 0.07575005292892456,
+        "agent": 52.81216697767377
+      },
+      "resolved": false
+    },
+    {
+      "query": "Oi, boa tarde",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "atualizar_numero_whatsapp",
+        "consultar_titulares_conta"
+      ],
+      "expected_tool": null,
+      "latency_ms": 50.36958260461688,
+      "latency_breakdown_ms": {
+        "router": 0.001166015863418579,
+        "retrieval": 0.07433304563164711,
+        "agent": 50.22537522017956
+      },
+      "resolved": false
+    },
+    {
+      "query": "Qual a taxa de manutenção mensal da conta?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_horario_agencia",
+        "abrir_conta_pj"
+      ],
+      "expected_tool": null,
+      "latency_ms": 68.43133270740509,
+      "latency_breakdown_ms": {
+        "router": 0.0009159557521343231,
+        "retrieval": 0.07983343675732613,
+        "agent": 68.2760002091527
+      },
+      "resolved": false
+    },
+    {
+      "query": "Vocês atendem no sábado?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "pix_cadastrar_chave",
+        "registrar_compra_nao_reconhecida"
+      ],
+      "expected_tool": null,
+      "latency_ms": 66.21554121375084,
+      "latency_breakdown_ms": {
+        "router": 0.0007501803338527679,
+        "retrieval": 0.06566615775227547,
+        "agent": 66.08850043267012
+      },
+      "resolved": false
+    },
+    {
+      "query": "Muito obrigado pela ajuda, até logo",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "abrir_chamado_travamento_app",
+        "contestar_cobranca_duplicada"
+      ],
+      "expected_tool": null,
+      "latency_ms": 63.327041920274496,
+      "latency_breakdown_ms": {
+        "router": 0.00016670674085617065,
+        "retrieval": 0.039624981582164764,
+        "agent": 63.25258407741785
+      },
+      "resolved": false
+    },
+    {
+      "query": "Como funciona o programa de cashback de vocês?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "editar_meta_financeira",
+        "consultar_cartoes_ativos"
+      ],
+      "expected_tool": null,
+      "latency_ms": 43.776500038802624,
+      "latency_breakdown_ms": {
+        "router": 0.0005420297384262085,
+        "retrieval": 0.05066674202680588,
+        "agent": 43.67445828393102
+      },
+      "resolved": false
+    },
+    {
+      "query": "Qual o telefone do SAC?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "parcelar_fatura_numero_vezes_escolhido",
+        "transferir_milhas"
+      ],
+      "expected_tool": null,
+      "latency_ms": 36.90449986606836,
+      "latency_breakdown_ms": {
+        "router": 0.0006668269634246826,
+        "retrieval": 0.05408329889178276,
+        "agent": 36.787958815693855
+      },
+      "resolved": false
+    },
+    {
+      "query": "Quais documentos preciso para abrir uma conta?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "antecipar_beneficio_inss",
+        "consultar_carteira_cripto"
+      ],
+      "expected_tool": null,
+      "latency_ms": 37.60029189288616,
+      "latency_breakdown_ms": {
+        "router": 0.0006249174475669861,
+        "retrieval": 0.05533406510949135,
+        "agent": 37.48950036242604
+      },
+      "resolved": false
+    },
+    {
+      "query": "Bom dia! Qual o valor mínimo para abrir uma conta?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_limite_disponivel_credito",
+        "pix_excluir_chave"
+      ],
+      "expected_tool": null,
+      "latency_ms": 59.96166681870818,
+      "latency_breakdown_ms": {
+        "router": 0.0015422701835632324,
+        "retrieval": 0.07083266973495483,
+        "agent": 59.81733277440071
+      },
+      "resolved": false
+    },
+    {
+      "query": "Preciso saber o saldo disponível pra pix",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "ativar_biometria",
+        "ativar_programa_milhas"
+      ],
+      "expected_tool": "consultar_saldo",
+      "latency_ms": 50.085166934877634,
+      "latency_breakdown_ms": {
+        "router": 0.004459172487258911,
+        "retrieval": 0.09354064241051674,
+        "agent": 49.905582796782255
+      },
+      "resolved": false
+    },
+    {
+      "query": "Essa cobrança na fatura não fui eu, quero estornar",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_cartoes_ativos",
+        "revogar_acesso_dispositivo"
+      ],
+      "expected_tool": "estornar_transacao",
+      "latency_ms": 44.78858411312103,
+      "latency_breakdown_ms": {
+        "router": 0.0008749775588512421,
+        "retrieval": 0.07466692477464676,
+        "agent": 44.634667225182056
+      },
+      "resolved": false
+    },
+    {
+      "query": "Manda o pdf da minha fatura atual",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "confirmar_email_cadastrado",
+        "excluir_meta_financeira"
+      ],
+      "expected_tool": "consultar_fatura",
+      "latency_ms": 59.91570930927992,
+      "latency_breakdown_ms": {
+        "router": 0.001125037670135498,
+        "retrieval": 0.09216694161295891,
+        "agent": 59.7423748113215
+      },
+      "resolved": false
+    },
+    {
+      "query": "Mudei de endereço, como atualizo minha entrega?",
+      "expected_route": "AGENT",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_recebiveis_pj",
+        "consultar_valor_total_fatura"
+      ],
+      "expected_tool": "alterar_endereco",
+      "latency_ms": 40.09274998679757,
+      "latency_breakdown_ms": {
+        "router": 0.0007078051567077637,
+        "retrieval": 0.11216709390282631,
+        "agent": 39.893874898552895
+      },
+      "resolved": false
+    },
+    {
+      "query": "Vocês cobram taxa de manutenção de conta?",
+      "expected_route": "FAST_PATH",
+      "predicted_route": "AGENT",
+      "retrieved_tools": [
+        "consultar_extrato_inss",
+        "solicitar_cotacao_seguro_celular"
+      ],
+      "expected_tool": null,
+      "latency_ms": 41.06141673400998,
+      "latency_breakdown_ms": {
+        "router": 0.004333909600973129,
+        "retrieval": 0.07854169234633446,
+        "agent": 40.90912500396371
+      },
+      "resolved": false
+    }
+  ]
+}

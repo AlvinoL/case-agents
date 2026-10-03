@@ -103,6 +103,7 @@ def run_harness(
     baseline_cost_total = 0.0
     baseline_latency_ms_total = 0.0
     n_resolved = 0
+    breakdown_total = {"router": 0.0, "retrieval": 0.0, "agent": 0.0}
 
     rows = []
 
@@ -111,12 +112,15 @@ def run_harness(
         expected_route = item["expected_route"]
         expected_tool = item.get("expected_tool")
 
+        # Relógio de ponta a ponta, simétrico ao do baseline. Antes, a latência era a soma do que
+        # cada componente declarava, e a chamada ao LLM do agente (que não declara) ficava de fora.
+        smart_start = time.perf_counter()
         route_result = router.predict(query)
         y_true.append(expected_route)
         y_pred.append(route_result.route)
 
         smart_cost = COST_ROUTER_USD
-        smart_latency_ms = route_result.latency_ms
+        breakdown = {"router": route_result.latency_ms, "retrieval": 0.0, "agent": 0.0}
 
         row = {
             "query": query,
@@ -130,7 +134,7 @@ def run_harness(
         else:
             retrieval_result = retriever.search(query, k=k)
             smart_cost += COST_RETRIEVAL_USD
-            smart_latency_ms += retrieval_result.latency_ms
+            breakdown["retrieval"] = retrieval_result.latency_ms
 
             top_k_names = [m.name for m in retrieval_result.matches]
             if expected_tool:
@@ -140,12 +144,20 @@ def run_harness(
             row["expected_tool"] = expected_tool
 
             if top_k_names:
+                agent_start = time.perf_counter()
                 mock_tool_execution(top_k_names[0], query)
                 llm_result = simulate_agent_llm_call(query, top_k_names[0])
+                breakdown["agent"] = (time.perf_counter() - agent_start) * 1000
                 smart_cost += llm_result["cost_usd"]
 
             # Resolvido = a tool executada (top-1) é a esperada; FAST_PATH esperado nunca resolve aqui.
             resolved = bool(top_k_names) and top_k_names[0] == expected_tool
+
+        smart_latency_ms = (time.perf_counter() - smart_start) * 1000
+        row["latency_ms"] = smart_latency_ms
+        row["latency_breakdown_ms"] = breakdown
+        for component, ms in breakdown.items():
+            breakdown_total[component] += ms
 
         row["resolved"] = resolved
         n_resolved += resolved
@@ -171,7 +183,11 @@ def run_harness(
         "confusion_matrix": router_metrics["confusion_matrix"],
         "precision_at_k": precision_at_k,
         "k": k,
-        "smart_pipeline": {"total_cost_usd": smart_cost_total, "total_latency_ms": smart_latency_ms_total},
+        "smart_pipeline": {
+            "total_cost_usd": smart_cost_total,
+            "total_latency_ms": smart_latency_ms_total,
+            "latency_breakdown_ms": breakdown_total,
+        },
         "baseline_always_llm": {
             "total_cost_usd": baseline_cost_total,
             "total_latency_ms": baseline_latency_ms_total,
@@ -197,6 +213,8 @@ def print_report(report: dict) -> None:
     print(f"Custo baseline (tudo pro LLM): ${report['baseline_always_llm']['total_cost_usd']:.5f}")
     print(f"Economia de custo: {report.get('cost_savings_pct', 0):.1f}%")
     print(f"Latência pipeline inteligente: {report['smart_pipeline']['total_latency_ms']:.1f} ms")
+    breakdown = report["smart_pipeline"]["latency_breakdown_ms"]
+    print("  detalhamento: " + ", ".join(f"{c} {ms:.1f} ms" for c, ms in breakdown.items()))
     print(f"Latência baseline: {report['baseline_always_llm']['total_latency_ms']:.1f} ms")
     print(f"Economia de latência: {report.get('latency_savings_pct', 0):.1f}%")
     print("-" * 60)
