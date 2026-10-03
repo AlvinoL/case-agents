@@ -1,0 +1,101 @@
+{
+  "cv": "RepeatedStratifiedKFold(5, 10, seed=42)",
+  "resultados": {
+    "C=1": [
+      {
+        "tau": 0.5,
+        "acuracia": 0.879245283018868,
+        "erros_graves": 0.8,
+        "fast_perdidos": 5.6
+      },
+      {
+        "tau": 0.6,
+        "acuracia": 0.6830188679245283,
+        "erros_graves": 0.0,
+        "fast_perdidos": 16.8
+      },
+      {
+        "tau": 0.7,
+        "acuracia": 0.5547169811320755,
+        "erros_graves": 0.0,
+        "fast_perdidos": 23.6
+      },
+      {
+        "tau": 0.8,
+        "acuracia": 0.5283018867924528,
+        "erros_graves": 0.0,
+        "fast_perdidos": 25.0
+      },
+      {
+        "tau": 0.9,
+        "acuracia": 0.5283018867924528,
+        "erros_graves": 0.0,
+        "fast_perdidos": 25.0
+      }
+    ],
+    "C=10": [
+      {
+        "tau": 0.5,
+        "acuracia": 0.8981132075471698,
+        "erros_graves": 1.0,
+        "fast_perdidos": 4.4
+      },
+      {
+        "tau": 0.6,
+        "acuracia": 0.8377358490566038,
+        "erros_graves": 0.6,
+        "fast_perdidos": 8.0
+      },
+      {
+        "tau": 0.7,
+        "acuracia": 0.7509433962264151,
+        "erros_graves": 0.2,
+        "fast_perdidos": 13.0
+      },
+      {
+        "tau": 0.8,
+        "acuracia": 0.6735849056603773,
+        "erros_graves": 0.0,
+        "fast_perdidos": 17.3
+      },
+      {
+        "tau": 0.9,
+        "acuracia": 0.5773584905660377,
+        "erros_graves": 0.0,
+        "fast_perdidos": 22.4
+      }
+    ],
+    "C=100": [
+      {
+        "tau": 0.5,
+        "acuracia": 0.8962264150943396,
+        "erros_graves": 1.1,
+        "fast_perdidos": 4.4
+      },
+      {
+        "tau": 0.6,
+        "acuracia": 0.8566037735849057,
+        "erros_graves": 0.9,
+        "fast_perdidos": 6.7
+      },
+      {
+        "tau": 0.7,
+        "acuracia": 0.8264150943396227,
+        "erros_graves": 0.6,
+        "fast_perdidos": 8.6
+      },
+      {
+        "tau": 0.8,
+        "acuracia": 0.7660377358490567,
+        "erros_graves": 0.2,
+        "fast_perdidos": 12.2
+      },
+      {
+        "tau": 0.9,
+        "acuracia": 0.6830188679245283,
+        "erros_graves": 0.0,
+        "fast_perdidos": 16.8
+      }
+    ]
+  }
+}
