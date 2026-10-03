@@ -1,2 +1,2 @@
-versao,data,commit,descricao,router_accuracy,precision_at_k,cost_savings_pct,latency_savings_pct,erros_agent_para_fast
-v01-aleatorio,2026-10-01,78f7936,"router e retriever aleatórios (seed 42 = máx. de 1.000 seeds; média 49,9%)",0.7667,0.0,76.7,99.9,3
+versao,data,commit,descricao,router_accuracy,precision_at_k,cost_savings_pct,latency_savings_pct,erros_agent_para_fast,resolution_rate,cost_per_resolved_smart,cost_per_resolved_baseline
+v01-aleatorio,2026-10-01,78f7936,"router e retriever aleatórios (seed 42 = máx. de 1.000 seeds; média 49,9%)",0.7667,0.0,76.7,99.9,3,,,

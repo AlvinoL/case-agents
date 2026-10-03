@@ -13,6 +13,7 @@ import subprocess
 import sys
 from datetime import date
 from pathlib import Path
+from typing import Optional
 
 RAIZ = Path(__file__).resolve().parent.parent
 RELATORIO = RAIZ / "reports" / "candidate_report.json"
@@ -21,11 +22,16 @@ HISTORICO = PASTA / "historico.csv"
 COLUNAS = [
     "versao", "data", "commit", "descricao", "router_accuracy", "precision_at_k",
     "cost_savings_pct", "latency_savings_pct", "erros_agent_para_fast",
+    "resolution_rate", "cost_per_resolved_smart", "cost_per_resolved_baseline",
 ]
 
 
 def git(*args: str) -> str:
     return subprocess.run(["git", *args], cwd=RAIZ, capture_output=True, text=True).stdout.strip()
+
+
+def arredondar(valor: Optional[float], casas: int) -> Optional[float]:
+    return None if valor is None else round(valor, casas)
 
 
 def main(versao: str, descricao: str) -> None:
@@ -36,17 +42,21 @@ def main(versao: str, descricao: str) -> None:
         sys.exit(f"Erro: a versão '{versao}' já foi registrada.")
 
     relatorio = json.loads(RELATORIO.read_text(encoding="utf-8"))
-    p_at_k = relatorio["precision_at_k"]
+    cpr = relatorio.get("cost_per_resolved_usd", {})
     linha = {
         "versao": versao,
         "data": date.today().isoformat(),
         "commit": git("rev-parse", "--short", "HEAD"),
         "descricao": descricao,
         "router_accuracy": round(relatorio["router_accuracy"], 4),
-        "precision_at_k": None if p_at_k is None else round(p_at_k, 4),
+        "precision_at_k": arredondar(relatorio["precision_at_k"], 4),
         "cost_savings_pct": round(relatorio["cost_savings_pct"], 1),
         "latency_savings_pct": round(relatorio["latency_savings_pct"], 1),
         "erros_agent_para_fast": relatorio["confusion_matrix"]["AGENT"]["FAST_PATH"],
+        # Métricas propostas: ausentes em relatórios anteriores a elas.
+        "resolution_rate": arredondar(relatorio.get("resolution_rate"), 4),
+        "cost_per_resolved_smart": arredondar(cpr.get("smart"), 5),
+        "cost_per_resolved_baseline": arredondar(cpr.get("baseline"), 5),
     }
 
     PASTA.mkdir(parents=True, exist_ok=True)
