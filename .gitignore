@@ -9,3 +9,6 @@ reports/
 
 # Material de estudo pessoal (nunca versionar)
 docs/private/
+
+# Cache de embeddings da variante SLM
+.cache/
