@@ -1,0 +1,3 @@
+# Dependências OPCIONAIS da variante SLM (encoder e5-small). O case roda sem elas.
+sentence-transformers==6.1.0
+torch==2.14.1

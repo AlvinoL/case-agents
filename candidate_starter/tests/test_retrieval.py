@@ -33,3 +33,16 @@ def test_cascata_usa_nome_ou_documento_conforme_o_limiar():
 
     assert so_documento.matches[0].name == "consultar_saldo"
     assert so_nome.matches[0].score < so_documento.matches[0].score  # o nome casa pior que o documento
+
+
+def test_dense_sem_encoder_disponivel_cai_para_busca_sparse(monkeypatch):
+    """Sem torch/modelo, a variante SLM não quebra: o fallback é o TF-IDF."""
+    import candidate_starter.retrieval as retrieval
+
+    monkeypatch.setattr(retrieval, "load_encoder", lambda: None)
+    tools = load_tools()
+    query = "Quanto eu tenho disponível na conta agora?"
+
+    dense = ToolRetriever(dense=True).fit(tools).search(query, k=2)
+    sparse = ToolRetriever().fit(tools).search(query, k=2)
+    assert [m.name for m in dense.matches] == [m.name for m in sparse.matches]

@@ -6,21 +6,28 @@ from typing import Optional
 from common.data_loader import load_eval_dataset, load_router_training_data, load_tools
 from common.interfaces import BaseRouter
 from candidate_starter.harness import print_report, run_harness
-from candidate_starter.retrieval import ToolRetriever
+from candidate_starter.retrieval import NAME_THRESHOLD, ToolRetriever
 from candidate_starter.router import QueryRouter
 
 
-def main(router: Optional[BaseRouter] = None, with_retriever: bool = True) -> None:
+def main(
+    router: Optional[BaseRouter] = None,
+    with_retriever: bool = True,
+    dense: bool = False,
+    name_threshold: float = NAME_THRESHOLD,
+) -> None:
     """Roda o harness; `router` permite avaliar alternativas (ex.: baselines triviais).
 
     `with_retriever=False` manda as queries AGENT ao LLM caro com todas as tools (isola o router).
+    `dense=True` usa o e5-small no fallback do retriever (variante SLM, requirements-slm.txt).
+    `name_threshold` é a regra de negócio da cascata: abaixo dele, o nome não é confiável.
     """
     tools = load_tools()
     train_texts, train_labels = load_router_training_data()
     eval_dataset = load_eval_dataset()
 
     router = (router or QueryRouter()).fit(train_texts, train_labels)
-    retriever = ToolRetriever().fit(tools) if with_retriever else None
+    retriever = ToolRetriever(name_threshold, dense=dense).fit(tools) if with_retriever else None
 
     report = run_harness(router, retriever, tools, eval_dataset)
     print_report(report)
@@ -32,4 +39,9 @@ def main(router: Optional[BaseRouter] = None, with_retriever: bool = True) -> No
 
 
 if __name__ == "__main__":
-    main(with_retriever="--sem-retriever" not in sys.argv)
+    args = sys.argv[1:]
+    main(
+        with_retriever="--sem-retriever" not in args,
+        dense="--slm" in args,
+        name_threshold=float(args[args.index("--limiar") + 1]) if "--limiar" in args else NAME_THRESHOLD,
+    )
