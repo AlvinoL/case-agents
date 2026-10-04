@@ -19,3 +19,17 @@ def test_ranking_ordenado_por_score_e_deterministico():
     assert [m.name for m in retriever.search("Perdi meu cartão, quero bloquear", k=5).matches] == [
         m.name for m in first.matches
     ]
+
+
+def test_cascata_usa_nome_ou_documento_conforme_o_limiar():
+    tools = [
+        Tool(name="parcelar_fatura", description="Permite dividir o valor da fatura.", category="financeiro"),
+        Tool(name="consultar_saldo", description="Mostra quanto dinheiro está disponível na conta.", category="financeiro"),
+    ]
+    query = "quanto dinheiro tenho disponível"  # não cita nenhum nome; só a descrição do saldo casa
+
+    so_nome = ToolRetriever(name_threshold=0.0).fit(tools).search(query, k=1)  # limiar 0: sempre o nome
+    so_documento = ToolRetriever(name_threshold=1.01).fit(tools).search(query, k=1)  # >1: sempre o documento
+
+    assert so_documento.matches[0].name == "consultar_saldo"
+    assert so_nome.matches[0].score < so_documento.matches[0].score  # o nome casa pior que o documento

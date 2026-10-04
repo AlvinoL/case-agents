@@ -1,9 +1,12 @@
 """Pilar 2 — Seleção de Tools Relevantes.
 
-Busca sparse: cada tool vira um documento (nome + descrição + categoria) indexado com o
-mesmo TF-IDF de palavras + caracteres do router (text.py). A query é vetorizada igual e as
-tools são ranqueadas por similaridade de cosseno. Tool nova = linha nova no índice, sem
-retreinar e sem precisar de exemplos rotulados.
+Busca sparse em cascata, com o mesmo TF-IDF de palavras + caracteres do router (text.py):
+  1. Compara a query só com o NOME das tools: o nome é o rótulo curto da intenção
+     (verbo + objeto, ex.: "parcelar fatura"), e o cosseno favorece o rótulo que casa por
+     inteiro em vez de variações longas e específicas.
+  2. Se nenhum nome casa acima do limiar, o nome não é confiável para essa query e o
+     ranking usa o documento completo (nome + descrição + categoria).
+Tool nova = linha nova nos índices, sem retreinar e sem exemplos rotulados.
 """
 import time
 from typing import List
@@ -15,36 +18,59 @@ from candidate_starter.text import build_vectorizer
 from common.interfaces import BaseToolRetriever
 from common.schemas import RetrievalResult, Tool, ToolMatch
 
+# p90 da similaridade máxima nome x frase nas frases FAST_PATH do treino (o "ruído" de
+# quem não pede tool). Derivado sem eval: python -m candidate_starter.validacao_retrieval
+NAME_THRESHOLD = 0.53
+
+
+def tool_name_text(tool: Tool) -> str:
+    """Nome legível da tool: snake_case vira palavras."""
+    return tool.name.replace("_", " ")
+
 
 def tool_document(tool: Tool) -> str:
-    """Texto indexado da tool: o nome em snake_case também carrega significado."""
-    return f"{tool.name.replace('_', ' ')} {tool.description} {tool.category}"
+    """Documento completo da tool: nome legível + descrição + categoria."""
+    return f"{tool_name_text(tool)} {tool.description} {tool.category}"
+
+
+class _CosineIndex:
+    """Índice TF-IDF com linhas de norma 1: produto escalar = similaridade de cosseno."""
+
+    def __init__(self, texts: List[str]) -> None:
+        self._vectorizer = build_vectorizer()
+        # O FeatureUnion junta dois vetores de norma 1; renormalizar mantém o cosseno em [0, 1].
+        self._matrix = l2_normalize(self._vectorizer.fit_transform(texts))
+
+    def scores(self, query: str) -> np.ndarray:
+        query_vec = l2_normalize(self._vectorizer.transform([query]))
+        return (self._matrix @ query_vec.T).toarray().ravel()
 
 
 class ToolRetriever(BaseToolRetriever):
-    def __init__(self) -> None:
+    def __init__(self, name_threshold: float = NAME_THRESHOLD) -> None:
         self._tools: List[Tool] = []
-        self._vectorizer = build_vectorizer()
-        self._index = None  # matriz esparsa (n_tools x n_features), linhas com norma 1
+        self._name_threshold = name_threshold
+        self._names = None
+        self._documents = None
         self._fitted = False
 
     def fit(self, tools: List[Tool]) -> "ToolRetriever":
-        """Aprende vocabulário/IDF do catálogo e indexa cada tool como um vetor."""
+        """Indexa o catálogo duas vezes: só nomes e documento completo."""
         self._tools = tools
-        # O FeatureUnion junta dois vetores de norma 1; renormalizar faz o produto escalar
-        # ser exatamente o cosseno.
-        self._index = l2_normalize(self._vectorizer.fit_transform([tool_document(t) for t in tools]))
+        self._names = _CosineIndex([tool_name_text(t) for t in tools])
+        self._documents = _CosineIndex([tool_document(t) for t in tools])
         self._fitted = True
         return self
 
     def search(self, query: str, k: int = 2) -> RetrievalResult:
-        """Retorna as top-k tools por similaridade de cosseno com a query."""
+        """Top-k pelo nome; se nenhum nome casa acima do limiar, top-k pelo documento."""
         if not self._fitted:
             raise RuntimeError("Chame fit() antes de search().")
 
         start = time.perf_counter()
-        query_vec = l2_normalize(self._vectorizer.transform([query]))
-        scores = (self._index @ query_vec.T).toarray().ravel()
+        scores = self._names.scores(query)
+        if scores.max() < self._name_threshold:
+            scores = self._documents.scores(query)
         top = np.argsort(-scores, kind="stable")[:k]  # stable: empate decidido pela ordem do catálogo
         matches = [ToolMatch(name=self._tools[i].name, score=float(scores[i])) for i in top]
         latency_ms = (time.perf_counter() - start) * 1000
