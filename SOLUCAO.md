@@ -3,7 +3,8 @@
 Resumo das escolhas técnicas e trade-offs. Detalhes de cada decisão em
 [`docs/DECISIONS.md`](docs/DECISIONS.md); experimentos do retriever em
 [`docs/EXPERIMENTOS_RETRIEVAL.md`](docs/EXPERIMENTOS_RETRIEVAL.md); evolução versão a versão em
-[`docs/resultados/historico.csv`](docs/resultados/historico.csv).
+[`docs/resultados/historico.csv`](docs/resultados/historico.csv); frentes de trabalho e tarefas em [`KANBAN.md`](KANBAN.md)
+(versão visual: `docs/kanban.html`).
 
 ## Em uma frase
 

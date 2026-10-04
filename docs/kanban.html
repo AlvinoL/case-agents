@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kanban do Case</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --surface: #ffffff; --surface-2: #eef1f5; --text: #1b2330; --muted: #5b6676;
+    --border: #d9dee6; --accent: #ec7000; --accent-soft: #fff1e4;
+    --done: #1f7a4d; --done-soft: #e3f4ea; --drop: #8a5a00; --drop-soft: #fbf0d9;
+    --back: #2f5fb3; --back-soft: #e5edfb; --shadow: 0 1px 2px rgba(16, 24, 40, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11151b; --surface: #181e26; --surface-2: #202834; --text: #e6eaf0; --muted: #9aa5b4;
+      --border: #2c3644; --accent: #ff8a2a; --accent-soft: #33240f;
+      --done: #4cc38a; --done-soft: #15291f; --drop: #e0b25a; --drop-soft: #2d2410;
+      --back: #7aa5f0; --back-soft: #18233a; --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #11151b; --surface: #181e26; --surface-2: #202834; --text: #e6eaf0; --muted: #9aa5b4;
+    --border: #2c3644; --accent: #ff8a2a; --accent-soft: #33240f;
+    --done: #4cc38a; --done-soft: #15291f; --drop: #e0b25a; --drop-soft: #2d2410;
+    --back: #7aa5f0; --back-soft: #18233a; --shadow: none;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1280px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -.01em; }
+  h2 { font-size: 19px; margin: 40px 0 12px; }
+  .lead { color: var(--muted); margin: 0 0 8px; max-width: 820px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+          padding: 8px 14px; box-shadow: var(--shadow); }
+  .stat b { font-size: 18px; margin-right: 6px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+           padding: 16px; box-shadow: var(--shadow); overflow-x: auto; }
+  .mermaid { display: flex; justify-content: center; min-width: 640px; }
+
+  /* Escada de versões */
+  .ladder { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+  .step { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px;
+          box-shadow: var(--shadow); position: relative; }
+  .step.final { border: 2px solid var(--accent); background: var(--accent-soft); }
+  .step .v { font-weight: 700; }
+  .step .what { color: var(--muted); font-size: 13px; margin: 2px 0 8px; min-height: 36px; }
+  .step dl { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; margin: 0; font-size: 13px; }
+  .step dt { color: var(--muted); } .step dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
+  .step .tag { position: absolute; top: 10px; right: 12px; font-size: 11px; font-weight: 700; color: var(--accent); }
+
+  /* Quadro */
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+  .board { display: grid; grid-template-columns: 220px repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .colhead { font-weight: 700; padding: 8px 10px; border-radius: 8px; font-size: 14px; }
+  .colhead.feito { background: var(--done-soft); color: var(--done); }
+  .colhead.descartado { background: var(--drop-soft); color: var(--drop); }
+  .colhead.backlog { background: var(--back-soft); color: var(--back); }
+  .lane { background: var(--surface-2); border-radius: 10px; padding: 12px; }
+  .lane .name { font-weight: 700; }
+  .lane .role { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .lane .goal { font-size: 13px; margin-top: 8px; }
+  .cell { display: flex; flex-direction: column; gap: 8px; min-height: 40px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--border);
+          border-radius: 8px; padding: 9px 11px; box-shadow: var(--shadow); font-size: 13px; }
+  .card.feito { border-left-color: var(--done); }
+  .card.descartado { border-left-color: var(--drop); }
+  .card.backlog { border-left-color: var(--back); }
+  .card .t { font-weight: 650; font-size: 14px; line-height: 1.35; }
+  .card .id { color: var(--muted); font-weight: 600; margin-right: 4px; }
+  .card .d { color: var(--muted); margin-top: 3px; }
+  .card .e { margin-top: 6px; padding: 4px 8px; border-radius: 6px; background: var(--surface-2); }
+  .card .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; color: var(--muted); font-size: 12px; }
+  .card .meta span { background: var(--surface-2); border-radius: 4px; padding: 1px 6px; }
+  .lanehead-mobile { display: none; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 40px; }
+
+  @media (max-width: 900px) {
+    .board { grid-template-columns: 1fr; }
+    .board > .colhead { display: none; }
+    .lanehead-mobile { display: block; font-weight: 700; font-size: 12px; text-transform: uppercase;
+                       letter-spacing: .04em; margin-top: 4px; }
+    .lanehead-mobile.feito { color: var(--done); } .lanehead-mobile.descartado { color: var(--drop); }
+    .lanehead-mobile.backlog { color: var(--back); }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Router de Queries &amp; Seleção de Tools</h1>
+  <p class="lead">Do esqueleto ponta a ponta à solução final, organizado em frentes de trabalho
+    independentes. Cada cartão aponta para o commit/PR que o entregou e para o resultado medido.</p>
+  <div class="stats" id="stats"></div>
+
+  <h2>Arquitetura final</h2>
+  <div class="panel"><pre class="mermaid" id="arch"></pre></div>
+
+  <h2>Melhoria contínua: uma mudança por versão</h2>
+  <p class="lead">Números do eval do case (30 queries), de <code>docs/resultados/historico.csv</code>.
+    Custo é determinístico no mock; latência tem ruído de ~±5 pp e por isso não aparece aqui.</p>
+  <div class="ladder" id="ladder"></div>
+
+  <h2>Quadro por frente de trabalho</h2>
+  <div class="legend">
+    <span><b style="color:var(--done)">Feito</b>: entregue e medido</span>
+    <span><b style="color:var(--drop)">Testado e descartado</b>: hipótese testada, não adotada, com evidência</span>
+    <span><b style="color:var(--back)">Backlog</b>: próximos passos</span>
+  </div>
+  <div class="board" id="board"></div>
+
+  <h2>Dependências entre tarefas</h2>
+  <p class="lead">Depois do esqueleto e da régua de medição, router, seleção de tools e
+    documentação avançam em paralelo; a variante SLM depende do retriever de referência.</p>
+  <div class="panel"><pre class="mermaid" id="deps"></pre></div>
+
+  <footer>Fonte única dos dados: o bloco <code>kanban-data</code> deste arquivo.
+    <code>python docs/sync_kanban.py</code> regenera o <code>KANBAN.md</code>.</footer>
+</main>
+
+<script id="kanban-data" type="application/json">
+{
+  "titulo": "Router de Queries & Seleção de Tools",
+  "arquitetura": "flowchart LR\n  Q[Query do cliente] --> R{Router<br/>TF-IDF palavras + caracteres<br/>+ Regressão Logística}\n  R -->|FAST_PATH| F[Resposta local<br/>sem LLM · US$ 0]\n  R -->|AGENT| N{Similaridade com o<br/>NOME da tool >= 0,53?}\n  N -->|sim| TN[Top-2 pelo nome]\n  N -->|não| TD[Top-2 pela descrição<br/>TF-IDF · e5-small opcional]\n  TN --> L[LLM do agente<br/>só 2 tools no prompt]\n  TD --> L\n  F --> H[Harness<br/>custo · latência · qualidade]\n  L --> H",
+  "colunas": [
+    {"id": "feito", "titulo": "Feito"},
+    {"id": "descartado", "titulo": "Testado e descartado"},
+    {"id": "backlog", "titulo": "Backlog (próximos passos)"}
+  ],
+  "frentes": [
+    {"id": "A", "nome": "Avaliação e harness", "perfil": "Eng. de avaliação / MLOps",
+     "objetivo": "Régua confiável antes de otimizar: métricas corretas, testadas e versionadas."},
+    {"id": "B", "nome": "Router", "perfil": "Eng. de ML",
+     "objetivo": "Decidir FAST_PATH vs AGENT barato, rápido e explicável."},
+    {"id": "C", "nome": "Seleção de tools", "perfil": "Eng. de ML / busca",
+     "objetivo": "Top-2 tools certas entre 285, sem LLM."},
+    {"id": "D", "nome": "Variante SLM", "perfil": "Eng. de ML",
+     "objetivo": "Testar se um encoder semântico pequeno supera o clássico."},
+    {"id": "E", "nome": "Documentação e governança", "perfil": "Time todo",
+     "objetivo": "Decisões rastreáveis, trade-offs e caminho para produção."}
+  ],
+  "versoes": [
+    {"v": "v00.3", "o_que": "Controle: sempre AGENT, sem retriever (= baseline)", "acuracia": "66,7%", "hit1": "—", "economia": "0,0%", "resolucao": "100%", "erros_graves": "0"},
+    {"v": "v01.4", "o_que": "Router aleatório, sem retriever", "acuracia": "76,7%*", "hit1": "—", "economia": "30,0%", "resolucao": "90,0%", "erros_graves": "3"},
+    {"v": "v02", "o_que": "Router TF-IDF + Reg. Logística, sem retriever", "acuracia": "100%", "hit1": "—", "economia": "33,3%", "resolucao": "100%", "erros_graves": "0"},
+    {"v": "v03", "o_que": "+ retriever TF-IDF no documento da tool", "acuracia": "100%", "hit1": "5%", "economia": "77,8%", "resolucao": "36,7%", "erros_graves": "0"},
+    {"v": "v04", "o_que": "+ retriever em cascata nome → descrição", "acuracia": "100%", "hit1": "20%", "economia": "77,8%", "resolucao": "46,7%", "erros_graves": "0", "final": true},
+    {"v": "v05", "o_que": "Cascata com e5-small no fallback (variante)", "acuracia": "100%", "hit1": "15%", "economia": "77,8%", "resolucao": "43,3%", "erros_graves": "0"}
+  ],
+  "nota_versoes": "* A seed do router aleatório foi o máximo de 1.000 seeds (média 49,9%).",
+  "tarefas": [
+    {"id": "A1", "frente": "A", "status": "feito", "titulo": "Descoberta: perfil dos dados e armadilhas do case",
+     "detalhe": "Tamanho e balanceamento dos dados, vazamento treino→eval (3 queries), bug de latência no harness, tools quase duplicadas.",
+     "evidencia": "Lista de armadilhas que guiou todas as frentes", "ref": "—", "depende": []},
+    {"id": "A2", "frente": "A", "status": "feito", "titulo": "Esqueleto ponta a ponta + métricas do case",
+     "detalhe": "Router e retriever aleatórios para validar o fluxo; acurácia, matriz de confusão, Precision@K e economia.",
+     "evidencia": "Fluxo completo rodando desde o primeiro dia", "ref": "78f7936 · PR #1", "depende": ["A1"]},
+    {"id": "A3", "frente": "A", "status": "feito", "titulo": "Histórico versionado de resultados",
+     "detalhe": "Cada versão registrada com o commit que a gerou; recusa registrar código sem commit.",
+     "evidencia": "historico.csv com todas as versões", "ref": "8df5304", "depende": ["A2"]},
+    {"id": "A4", "frente": "A", "status": "feito", "titulo": "Métrica: custo por atendimento resolvido",
+     "detalhe": "A economia bruta não penaliza erro; esta métrica mostra se o cliente foi atendido.",
+     "evidencia": "Aleatório: 76,7% de economia, mas 17% mais caro por cliente resolvido", "ref": "3c3ee13", "depende": ["A2"]},
+    {"id": "A5", "frente": "A", "status": "feito", "titulo": "Baselines triviais (sempre AGENT)",
+     "detalhe": "Referência honesta a vencer, além do aleatório.", "evidencia": "66,7% de acurácia sem nenhum modelo",
+     "ref": "8c00955", "depende": ["A2"]},
+    {"id": "A6", "frente": "A", "status": "feito", "titulo": "Correção: latência medida de ponta a ponta",
+     "detalhe": "A soma declarada pelos componentes omitia a chamada ao LLM do agente.",
+     "evidencia": "Economia de latência: 99,9% (enganoso) → 60,6%", "ref": "02f9eaa · PR #3", "depende": ["A2"]},
+    {"id": "A7", "frente": "A", "status": "feito", "titulo": "Testes unitários das métricas",
+     "detalhe": "Rede de segurança antes de mexer no harness: economia negativa, divisão por zero, orientação da matriz.",
+     "evidencia": "15 testes passando no total", "ref": "b495d67 · PR #4", "depende": ["A2"]},
+    {"id": "A8", "frente": "A", "status": "feito", "titulo": "Hit@1, MRR e latência p50/p95",
+     "detalhe": "O mock executa a top-1: Precision@2 sozinho esconde a tool executada.",
+     "evidencia": "Oráculo com gabarito em 2º lugar: P@2 = 100%, Hit@1 = 0%", "ref": "73f4018 · 2859090 · PR #5", "depende": ["A7"]},
+    {"id": "A9", "frente": "A", "status": "feito", "titulo": "Pipeline sem retriever para ablação",
+     "detalhe": "Todas as tools ao LLM caro: isola o efeito do router da economia do top-k.",
+     "evidencia": "Controle = baseline: 0,0% de economia de custo", "ref": "999f042 · PR #6", "depende": ["A6"]},
+
+    {"id": "B1", "frente": "B", "status": "feito", "titulo": "Router TF-IDF (palavras + caracteres) + Regressão Logística",
+     "detalhe": "Texto vira tabela de features; regressão logística como scorecard interpretável. Stopwords mantidas.",
+     "evidencia": "v02: 100% no eval, 0 erros graves", "ref": "385a63b · PR #6", "depende": ["A9"]},
+    {"id": "B2", "frente": "B", "status": "feito", "titulo": "Validação cruzada K=5 no treino",
+     "detalhe": "Compara palavras, caracteres e os dois juntos, sem tocar no eval.",
+     "evidencia": "~90% ± 9% de acurácia: estimativa honesta de generalização", "ref": "138d982 · PR #6", "depende": ["B1"]},
+    {"id": "B3", "frente": "B", "status": "feito", "titulo": "Análise do threshold assimétrico τ",
+     "detalhe": "Trade-off entre cliente sem atendimento e economia perdida.",
+     "evidencia": "τ=0,7 corta ~80% dos erros graves; vale se 1 cliente não atendido custar > ~US$ 0,32", "ref": "bad63c0 · PR #7", "depende": ["B2"]},
+
+    {"id": "C1", "frente": "C", "status": "feito", "titulo": "Retriever TF-IDF no documento da tool",
+     "detalhe": "Mesmo vectorizer do router; similaridade de cosseno entre query e nome + descrição + categoria.",
+     "evidencia": "v03: Hit@1 5%, P@2 25%", "ref": "07af934 · PR #8", "depende": ["B1"]},
+    {"id": "C2", "frente": "C", "status": "feito", "titulo": "Análise de erros: o catálogo tem iscas",
+     "detalhe": "Tools canônicas (gabarito) vs variações que parafraseiam as queries do eval, na mesma categoria.",
+     "evidencia": "16 dos 16 erros de top-1: isca na mesma categoria do gabarito", "ref": "—", "depende": ["C1"]},
+    {"id": "C3", "frente": "C", "status": "feito", "titulo": "Retriever em cascata: nome → descrição",
+     "detalhe": "Nome da tool = rótulo da intenção; limiar 0,53 derivado do treino, sem rótulos de tool.",
+     "evidencia": "v04: Hit@1 5% → 20%, resolução 36,7% → 46,7%", "ref": "8475d09 · PR #8", "depende": ["C2"]},
+    {"id": "C4", "frente": "C", "status": "feito", "titulo": "Experimentos de ranking documentados",
+     "detalhe": "12 variantes (TF-IDF, BM25, sublinear, e5) com Hit@1/2/3 e MRR, reproduzíveis por script.",
+     "evidencia": "Nenhuma supera a cascata no top-1", "ref": "56a01d9 · PR #9", "depende": ["C3", "D2"]},
+
+    {"id": "D1", "frente": "D", "status": "feito", "titulo": "Escolha do modelo: licença e compatibilidade",
+     "detalhe": "e5-small (MIT, revisão fixada); Colibri adiado por licença Gemma; wheels para o ambiente checadas.",
+     "evidencia": "Dependência opcional em requirements-slm.txt", "ref": "b1e5f87", "depende": []},
+    {"id": "D2", "frente": "D", "status": "feito", "titulo": "e5-small no fallback da cascata",
+     "detalhe": "Prefixos query/passage, cache de embeddings, fallback automático para TF-IDF sem torch.",
+     "evidencia": "v05: Hit@1 15% (v04: 20%), ~9× a latência do retriever", "ref": "b1e5f87 · 7cfbbc1 · PR #8", "depende": ["C3", "D1"]},
+
+    {"id": "E1", "frente": "E", "status": "feito", "titulo": "Registro de decisões (ADRs D1–D11)",
+     "detalhe": "Contexto, decisão, alternativas, porquê e evidência de cada escolha.", "evidencia": "docs/DECISIONS.md",
+     "ref": "07204fc · PR #10", "depende": ["B3", "C4"]},
+    {"id": "E2", "frente": "E", "status": "feito", "titulo": "Resumo da solução, trade-offs e produção",
+     "detalhe": "Resultado, como rodar, trade-offs, limites e caminho para produção.", "evidencia": "SOLUCAO.md",
+     "ref": "7e04fcf · PR #11", "depende": ["E1"]},
+
+    {"id": "X1", "frente": "B", "status": "descartado", "titulo": "Adotar τ = 0,7 agora",
+     "detalhe": "Reduz erro grave, mas custa ~metade da economia; depende do custo real de um cliente não atendido.",
+     "evidencia": "Virou decisão de negócio (backlog)", "ref": "bad63c0", "depende": ["B3"]},
+    {"id": "X2", "frente": "C", "status": "descartado", "titulo": "Filtro por categoria na cascata",
+     "detalhe": "Teto medido antes de implementar: filtro perfeito aplicado aos erros da v04.",
+     "evidencia": "Corrige 0 de 16 erros (teto zero)", "ref": "—", "depende": ["C3"]},
+    {"id": "X3", "frente": "C", "status": "descartado", "titulo": "BM25 e TF-IDF sublinear",
+     "detalhe": "BM25 soma termos encontrados, e as iscas contêm mais termos da query.",
+     "evidencia": "Cascata com BM25: Hit@1 15% (v04: 20%)", "ref": "56a01d9", "depende": ["C3"]},
+    {"id": "X4", "frente": "C", "status": "descartado", "titulo": "Aumentar k para 3",
+     "detalhe": "Inflaria o Precision@K sem mudar a tool executada nem o custo no mock.",
+     "evidencia": "Hit@3 = 65% vs Hit@2 = 25% (v03); fica como recomendação para LLM real", "ref": "—", "depende": ["C1"]},
+    {"id": "X5", "frente": "C", "status": "descartado", "titulo": "Posição da tool no catálogo como sinal",
+     "detalhe": "Artefato do dataset: subiria a métrica sem generalizar.", "evidencia": "Não testado por princípio",
+     "ref": "—", "depende": ["C2"]},
+    {"id": "X6", "frente": "D", "status": "descartado", "titulo": "e5-small como solução principal",
+     "detalhe": "Melhor recall (Hit@2 50% puro), pior top-1 e custo maior; ganho dentro do ruído.",
+     "evidencia": "Critério prévio: SLM só se ganhar de forma mensurável", "ref": "7cfbbc1", "depende": ["D2"]},
+
+    {"id": "N1", "frente": "A", "status": "backlog", "titulo": "Eval maior, rotulado a partir de produção",
+     "detalhe": "Priorizar queries de baixa confiança (active learning); retriever avaliado isolado do router; IC 95%.",
+     "evidencia": "Hoje: 30 queries, 1 query = 3–5 pp", "ref": "—", "depende": []},
+    {"id": "N2", "frente": "A", "status": "backlog", "titulo": "Penalidade por cliente não atendido na métrica",
+     "detalhe": "Custo esperado = custo de LLM + penalidade × não resolvidos, com penalidade definida pelo negócio.",
+     "evidencia": "Sem ela, a métrica premia o barato que erra", "ref": "—", "depende": []},
+    {"id": "N3", "frente": "B", "status": "backlog", "titulo": "Calibrar τ com o negócio",
+     "detalhe": "τ como parâmetro configurável (na dúvida, AGENT), sem retreinar.", "evidencia": "Análise pronta (B3)",
+     "ref": "—", "depende": ["N2"]},
+    {"id": "N4", "frente": "C", "status": "backlog", "titulo": "Governança do catálogo de tools",
+     "detalhe": "Uma tool canônica por intenção, dono por tool, descrições discriminativas; gate de CI que usa o retriever para barrar duplicatas.",
+     "evidencia": "Maior ganho disponível: o limite é o catálogo", "ref": "—", "depende": []},
+    {"id": "N5", "frente": "C", "status": "backlog", "titulo": "LLM real escolhendo entre as top-3",
+     "detalhe": "Function calling sobre a lista curta; medir Hit@1 do LLM contra custo em tokens.",
+     "evidencia": "Gabarito nas top-3 em 65% (v03)", "ref": "—", "depende": []},
+    {"id": "N6", "frente": "C", "status": "backlog", "titulo": "Roteamento hierárquico para milhares de tools",
+     "detalhe": "Categoria → tool para reduzir espaço de busca e latência em escala.", "evidencia": "Teto zero no case, útil em escala",
+     "ref": "—", "depende": ["N4"]},
+    {"id": "N7", "frente": "D", "status": "backlog", "titulo": "Comparar Colibri (pt-BR) no mesmo eval",
+     "detalhe": "Foco em queries informais e com erro de digitação; revisar termos da licença Gemma antes.", "evidencia": "—",
+     "ref": "—", "depende": []},
+    {"id": "N8", "frente": "E", "status": "backlog", "titulo": "Produção: deploy, observabilidade e guardrails",
+     "detalhe": "Container leve + LLM gerenciado; traces por etapa, drift, custo por resolvido; mascaramento de dados pessoais; confirmação em tools com efeito colateral.",
+     "evidencia": "Detalhado em SOLUCAO.md", "ref": "—", "depende": ["N1", "N3"]}
+  ]
+}
+</script>
+
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+  const data = JSON.parse(document.getElementById("kanban-data").textContent);
+  const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html !== undefined) n.innerHTML = html; return n; };
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // Totais
+  const count = (st) => data.tarefas.filter((t) => t.status === st).length;
+  const stats = document.getElementById("stats");
+  [["feito", "entregues"], ["descartado", "testadas e descartadas"], ["backlog", "no backlog"]].forEach(([st, label]) =>
+    stats.append(el("div", "stat", `<b>${count(st)}</b>${label}`)));
+  stats.append(el("div", "stat", `<b>${data.frentes.length}</b>frentes de trabalho`));
+
+  // Escada de versões
+  const ladder = document.getElementById("ladder");
+  data.versoes.forEach((v) => {
+    const s = el("div", "step" + (v.final ? " final" : ""));
+    s.innerHTML = `${v.final ? '<span class="tag">SOLUÇÃO</span>' : ""}
+      <div class="v">${esc(v.v)}</div><div class="what">${esc(v.o_que)}</div>
+      <dl><dt>Acurácia router</dt><dd>${esc(v.acuracia)}</dd>
+          <dt>Hit@1 retriever</dt><dd>${esc(v.hit1)}</dd>
+          <dt>Economia de custo</dt><dd>${esc(v.economia)}</dd>
+          <dt>Resolução</dt><dd>${esc(v.resolucao)}</dd>
+          <dt>Erros graves</dt><dd>${esc(v.erros_graves)}</dd></dl>`;
+    ladder.append(s);
+  });
+  ladder.after(el("p", "lead", esc(data.nota_versoes)));
+
+  // Quadro: raias (frentes) x colunas
+  const board = document.getElementById("board");
+  board.append(el("div"));
+  data.colunas.forEach((c) => board.append(el("div", "colhead " + c.id, esc(c.titulo))));
+  data.frentes.forEach((f) => {
+    board.append(el("div", "lane", `<div class="name">${esc(f.id)} · ${esc(f.nome)}</div>
+      <div class="role">${esc(f.perfil)}</div><div class="goal">${esc(f.objetivo)}</div>`));
+    data.colunas.forEach((c) => {
+      const cell = el("div", "cell");
+      const tasks = data.tarefas.filter((t) => t.frente === f.id && t.status === c.id);
+      if (tasks.length) cell.append(el("div", "lanehead-mobile " + c.id, esc(c.titulo)));
+      tasks.forEach((t) => {
+        const meta = [t.ref !== "—" ? t.ref : null, t.depende.length ? "depende de " + t.depende.join(", ") : null]
+          .filter(Boolean).map((m) => `<span>${esc(m)}</span>`).join("");
+        cell.append(el("div", "card " + t.status, `<div class="t"><span class="id">${esc(t.id)}</span>${esc(t.titulo)}</div>
+          <div class="d">${esc(t.detalhe)}</div>
+          ${t.evidencia !== "—" ? `<div class="e">${esc(t.evidencia)}</div>` : ""}
+          ${meta ? `<div class="meta">${meta}</div>` : ""}`));
+      });
+      board.append(cell);
+    });
+  });
+
+  // Grafo de dependências (só o que foi entregue), agrupado por frente
+  const done = data.tarefas.filter((t) => t.status === "feito");
+  let g = "flowchart TB\n";
+  data.frentes.forEach((f) => {
+    const ts = done.filter((t) => t.frente === f.id);
+    if (!ts.length) return;
+    g += `  subgraph ${f.id}["${f.nome}"]\n`;
+    ts.forEach((t) => (g += `    ${t.id}["${t.id} · ${t.titulo.replace(/"/g, "'")}"]\n`));
+    g += "  end\n";
+  });
+  done.forEach((t) => t.depende.forEach((d) => (g += `  ${d} --> ${t.id}\n`)));
+
+  document.getElementById("arch").textContent = data.arquitetura;
+  document.getElementById("deps").textContent = g;
+  const dark = document.documentElement.dataset.theme === "dark" ||
+    (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+  mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default", flowchart: { htmlLabels: true } });
+  mermaid.run({ querySelector: ".mermaid" });
+</script>
+</body>
+</html>
