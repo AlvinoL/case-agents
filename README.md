@@ -1,5 +1,7 @@
 # Case Técnico — Router de Queries & Seleção de Tools
 
+> **Solução do candidato:** escolhas técnicas, resultados e trade-offs em [`SOLUCAO.md`](SOLUCAO.md).
+
 ## Contexto
 
 Você está construindo o "cérebro de roteamento" de um agente de atendimento (banco digital
