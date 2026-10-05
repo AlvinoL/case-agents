@@ -17,7 +17,7 @@ resolve, sem chave de API, 100% reprodutível (seeds fixas) e com dependências 
 | [D5](#d5--métricas-além-das-pedidas) | Métricas além das pedidas pelo case | Adotada (parcial, por escopo) |
 | [D6](#d6--normalização-de-texto-sem-remover-stopwords) | Normalização de texto, sem remover stopwords | Adotada |
 | [D7](#d7--latência-medida-de-ponta-a-ponta) | Latência medida de ponta a ponta | Adotada (correção do harness) |
-| [D8](#d8--evolução-por-ablação) | Evolução por ablação, com retriever nulo | Adotada |
+| [D8](#d8--construção-incremental-melhoria-contínua) | Construção incremental (melhoria contínua), com retriever nulo | Adotada |
 | [D9](#d9--protocolo-de-validação) | Protocolo de validação | Adotada |
 | [D10](#d10--k--2-no-retriever) | k = 2 no retriever | Mantido |
 | [D11](#d11--ideias-descartadas-com-evidência) | Ideias descartadas com evidência | Registro |
@@ -202,7 +202,7 @@ confiável para comparar versões.
 | v01.1 (soma declarada, com o bug) | 99,9% |
 | v01.2 (ponta a ponta) | 60,6% |
 
-## D8 — Evolução por ablação
+## D8 — Construção incremental (melhoria contínua)
 
 **Decisão.** Cada versão muda **uma** peça, registrada em `historico.csv`. O harness aceita
 `retriever=None` (todas as tools ao LLM caro), para medir o router sem misturar com a economia

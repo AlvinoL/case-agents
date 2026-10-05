@@ -48,7 +48,7 @@ flowchart LR
 - [x] **A6** Correção: latência medida de ponta a ponta — Economia de latência: 99,9% (enganoso) → 60,6% · `02f9eaa · PR #3`
 - [x] **A7** Testes unitários das métricas — 15 testes passando no total · `b495d67 · PR #4`
 - [x] **A8** Hit@1, MRR e latência p50/p95 — Oráculo com gabarito em 2º lugar: P@2 = 100%, Hit@1 = 0% · `73f4018 · 2859090 · PR #5`
-- [x] **A9** Pipeline sem retriever para ablação — Controle = baseline: 0,0% de economia de custo · `999f042 · PR #6`
+- [x] **A9** Pipeline sem retriever para comparação justa — Controle = baseline: 0,0% de economia de custo · `999f042 · PR #6`
 
 **Backlog (próximos passos)**
 
@@ -140,7 +140,7 @@ flowchart TB
     A6["A6 · Correção: latência medida de ponta a ponta"]
     A7["A7 · Testes unitários das métricas"]
     A8["A8 · Hit@1, MRR e latência p50/p95"]
-    A9["A9 · Pipeline sem retriever para ablação"]
+    A9["A9 · Pipeline sem retriever para comparação justa"]
   end
   subgraph B["Router"]
     B1["B1 · Router TF-IDF (palavras + caracteres) + Regressão Logística"]
