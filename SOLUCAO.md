@@ -36,6 +36,21 @@ varia ~±5 pp entre rodadas; custo e qualidade são determinísticos.
 
 O erro grave é AGENT → FAST_PATH: o cliente que precisava do agente recebe resposta local.
 
+**Desfecho das 30 queries (v04)**
+
+| Query esperada | Desfecho | Queries | Resolvida |
+|---|---|---|---|
+| FAST_PATH | Resposta local | 10 | ✅ |
+| AGENT | Enviada ao FAST_PATH (erro grave) | 0 | ❌ |
+| AGENT | Tool certa em 1º, executada | 4 | ✅ |
+| AGENT | Tool certa em 2º, não executada | 4 | ❌ |
+| AGENT | Tool certa fora do top-2 | 12 | ❌ |
+| **Total** | | **30** | **14 (46,7%)** |
+
+A tabela detalha a célula AGENT → AGENT da matriz pelo resultado do retriever. A perda está no
+ranking dentro do catálogo, não no roteamento: das 16 queries AGENT não resolvidas, 4 tinham a
+tool certa em 2º lugar e 12, fora do top-2.
+
 **Leitura honesta.** A estimativa de generalização do router é **~90%** (validação cruzada K=5
 no treino), não 100%: o eval é pequeno, mais fácil que o treino e tem 3 queries idênticas ao
 treino. O retriever é o ponto fraco: o catálogo tem tools quase duplicadas que parafraseiam as
