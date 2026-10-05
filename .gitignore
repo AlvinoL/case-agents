@@ -2,12 +2,13 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-reports/
+reports/*
+!reports/candidate_report.json
 .pytest_cache/
 *.egg-info/
 .DS_Store
 
-# Material de estudo pessoal (nunca versionar)
+# Notas locais (não versionadas)
 docs/private/
 
 # Cache de embeddings da variante SLM
