@@ -1,6 +1,24 @@
+# Solução — Router de Queries & Seleção de Tools
+
+> [!IMPORTANT]
+> **Resumo da solução adotada. Detalhes, resultados e trade-offs em [`SOLUCAO.md`](SOLUCAO.md).**
+>
+> - **Router:** TF-IDF (palavras + n-gramas de caracteres) + Regressão Logística. Barato, rápido e interpretável.
+> - **Seleção de tools:** busca em cascata, comparando a pergunta primeiro com o **nome** da tool e, se o nome não casar, com a descrição. Sem LLM e sem chave de API.
+> - **Resultado:** **77,8% de economia de custo**, **custo por atendimento resolvido 52% menor** que o baseline e **nenhum** cliente que precisava do agente enviado à resposta local. Router com 100% no eval e ~90% na validação cruzada.
+> - **Como chegamos lá:** decisões em [`docs/DECISIONS.md`](docs/DECISIONS.md), construção incremental em [`KANBAN.md`](KANBAN.md), relatório final em [`reports/candidate_report.json`](reports/candidate_report.json).
+>
+> ```bash
+> pip install -r requirements.txt
+> pytest candidate_starter/tests -v
+> python -m candidate_starter.run_case
+> ```
+
+---
+
 # Case Técnico — Router de Queries & Seleção de Tools
 
-> **Solução do candidato:** escolhas técnicas, resultados e trade-offs em [`SOLUCAO.md`](SOLUCAO.md).
+<sub>Enunciado original do case.</sub>
 
 ## Contexto
 

@@ -24,7 +24,8 @@ casar, com a descrição. Sem LLM, sem chave de API, 100% reprodutível.
 | Economia de latência | 59,6% | — |
 | Custo por atendimento resolvido* | US$ 0,0143 | US$ 0,0300 |
 
-\* Métrica proposta; premissa: o baseline resolve 100% das queries.
+\* Métrica proposta; premissa: o baseline resolve 100% das queries. A latência é simulada no mock e
+varia ~±5 pp entre rodadas; custo e qualidade são determinísticos.
 
 **Leitura honesta.** A estimativa de generalização do router é **~90%** (validação cruzada K=5
 no treino), não 100%: o eval é pequeno, mais fácil que o treino e tem 3 queries idênticas ao
