@@ -27,6 +27,15 @@ casar, com a descrição. Sem LLM, sem chave de API, 100% reprodutível.
 \* Métrica proposta; premissa: o baseline resolve 100% das queries. A latência é simulada no mock e
 varia ~±5 pp entre rodadas; custo e qualidade são determinísticos.
 
+**Matriz de confusão do router (v04)**
+
+| Verdadeiro \ Previsto | FAST_PATH | AGENT |
+|---|---|---|
+| **FAST_PATH** (10) | **10** | 0 |
+| **AGENT** (20) | 0 (erro grave) | **20** |
+
+O erro grave é AGENT → FAST_PATH: o cliente que precisava do agente recebe resposta local.
+
 **Leitura honesta.** A estimativa de generalização do router é **~90%** (validação cruzada K=5
 no treino), não 100%: o eval é pequeno, mais fácil que o treino e tem 3 queries idênticas ao
 treino. O retriever é o ponto fraco: o catálogo tem tools quase duplicadas que parafraseiam as
